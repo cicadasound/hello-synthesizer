@@ -1,0 +1,165 @@
+:root {
+  --black: #000;
+  --white: #fff;
+  --light-green: #d9e5d6;
+  --blue: #00a7e1;
+  --yellow: #eddea4;
+  --tangerine: #f7a072;
+
+  --border-color: var(--tangerine);
+  --text-color: var(--black);
+  --main-background: var(--light-green);
+  --light-background: var(--yellow);
+}
+
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--text-color);
+  background-color: var(--main-background);
+  font-family: "Work Sans", sans-serif;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  text-align: center;
+}
+
+.synth {
+  display: flex;
+  flex-direction: column;
+  outline: 0;
+}
+
+.synth__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.controls-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.controls-section__group {
+  display: flex;
+  gap: 1rem;
+}
+
+.controls-section__group--vertical {
+  flex-direction: column;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.control__field {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 681px) {
+  .synth__controls {
+    flex-direction: row;
+  }
+}
+
+.keyboard {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: 2rem;
+}
+
+.key {
+  color: var(--border-color);
+  background-color: var(--white);
+  border: 1px solid var(--border-color);
+  flex: 0 0 4rem;
+  height: 20rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  margin-left: -0.2rem;
+  user-select: none;
+}
+
+.key:focus {
+  outline: 0;
+}
+
+.key--black {
+  position: relative;
+  flex: 0 0 2.8rem;
+  height: 10rem;
+  padding: 0;
+  background-color: var(--black);
+  color: var(--white);
+  transform: translate(50%, 0);
+  margin-left: -3rem;
+}
+
+.key[data-active="true"] {
+  background-color: var(--light-background);
+}
+
+.key__note {
+  color: var(--text-color);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.key__keyboard-key {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.key--black .key__note {
+  color: var(--white);
+}
+
+.key--black .key__keyboard-key {
+  color: var(--tangerine);
+}
+
+@media (min-width: 481px) and (max-width: 700px) {
+  .keyboard {
+    transform: scale(0.7);
+  }
+}
+
+@media (max-width: 480px) {
+  .keyboard {
+    transform: scale(0.5);
+  }
+}
+
+.range-container input[type="range"] {
+  outline: none;
+  background: transparent;
+}
+
+.range-container--vertical input[type="range"] {
+  transform: rotate(270deg);
+  margin-top: 50px;
+  margin-left: -2.4rem;
+  margin-right: -2.4rem;
+  height: 6rem;
+  width: 8rem;
+}
+
+.analyser {
+  width: 100%;
+  height: 100px;
+}
