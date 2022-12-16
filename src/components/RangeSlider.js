@@ -1,10 +1,10 @@
-import React, { useRef } from "react";
-import classnames from "classnames";
+import React, {useRef} from 'react';
+import classnames from 'classnames';
 
-export function RangeSlider({ value, onChange, vertical, ...rest }) {
+export function RangeSlider({value, onChange, vertical, ...rest}) {
   const hovered = useRef(false);
-  const className = classnames("range-container", {
-    "range-container--vertical": vertical
+  const className = classnames('range-container', {
+    'range-container--vertical': vertical,
   });
 
   const handleMouseEnter = (event) => {

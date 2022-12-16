@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from "react";
+import React, {useRef, useEffect} from 'react';
 
-export function Analyser({ audioContext, inputNode }) {
+export function Analyser({audioContext, inputNode}) {
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
 
@@ -13,7 +13,7 @@ export function Analyser({ audioContext, inputNode }) {
     inputNode.connect(analyserRef.current);
 
     const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext('2d');
 
     //Our draw come here
     visualize(context);
@@ -34,10 +34,10 @@ export function Analyser({ audioContext, inputNode }) {
 
     const draw = function () {
       analyserRef.current.getByteTimeDomainData(dataArray);
-      canvasCtx.fillStyle = "rgb(217, 229, 214)";
+      canvasCtx.fillStyle = 'rgb(217, 229, 214)';
       canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
       canvasCtx.lineWidth = 2;
-      canvasCtx.strokeStyle = "rgb(0, 0, 0)";
+      canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
       canvasCtx.beginPath();
 
       const sliceWidth = (WIDTH * 1.0) / bufferLength;

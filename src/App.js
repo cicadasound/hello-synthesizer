@@ -1,6 +1,6 @@
-import "./styles.css";
+import './styles.css';
 
-import { Synth } from "./Synth";
+import {Synth} from './components/Synth';
 
 export default function App() {
   return (
