@@ -326,6 +326,12 @@ export const Synth = () => {
       tabIndex={0}
     >
       <div className="synth__controls">
+        <section className="controls-section">
+          <div className="latch-group">
+            <Toggle label="LATCH" onChange={handleLatchChange} active={latch} />
+            <Toggle label="ARP" onChange={handleArpChange} active={arp} />
+          </div>
+        </section>
         <Clock title="CLK" clock={clock} onChange={handleClockChange} />
         <Oscillator title="OSC1" osc={osc1} onChange={handleOsc1Change} />
         <Oscillator title="OSC2" osc={osc2} onChange={handleOsc2Change} />
@@ -343,8 +349,6 @@ export const Synth = () => {
         onKeyTouchStart={handleKeyTouchStart}
         onKeyTouchEnd={handleKeyTouchEnd}
       />
-      <Toggle label="LATCH" onChange={handleLatchChange} active={latch} />
-      <Toggle label="ARP" onChange={handleArpChange} active={arp} />
       <Analyser
         audioContext={audioContext.current}
         inputNode={mainGainRef.current}
