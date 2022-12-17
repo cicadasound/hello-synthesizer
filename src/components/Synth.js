@@ -7,8 +7,27 @@ import {Filter} from './Filter';
 import {Envelope} from './Envelope';
 import {Delay} from './Delay';
 import {Keyboard} from './Keyboard';
+import {Toggle} from './Toggle';
+import {Clock} from './Clock';
 
 import KEYS from '../data/KEYS';
+
+const DEFAULTS = {
+  amp: {
+    level: 0.2,
+  },
+  filter: {
+    frequency: 1500,
+    q: 0,
+  },
+  delay: {
+    time: 0,
+    feedback: 0,
+  },
+  clock: {
+    tempo: 90,
+  },
+};
 
 export const Synth = () => {
   const audioContext = useRef(
@@ -20,64 +39,112 @@ export const Synth = () => {
   const delayRef = useRef(null);
   const feedbackRef = useRef(null);
 
+  const [currentNote, setCurrentNote] = useState(null);
+  const arpClock = useRef(null);
   const [pressedKeys, setPressedKeys] = useState([]);
+  const [latch, setLatch] = useState(false);
+  const [arp, setArp] = useState(false);
+
   const [osc1, setOsc1] = useState({
     type: 'sawtooth',
     detune: 0,
     octave: 1,
   });
+
   const [osc2, setOsc2] = useState({
     type: 'sawtooth',
     detune: 0,
     octave: 1,
   });
-  const [amp, setAmp] = useState({
-    level: 0.4,
-  });
-  const [filter, setFilter] = useState({
-    frequency: 1000,
-    q: 0,
-  });
+
+  const [amp, setAmp] = useState(DEFAULTS.amp);
+  const [filter, setFilter] = useState(DEFAULTS.filter);
   const [envelope, setEnvelope] = useState({
-    attack: 1,
+    attack: 0,
     decay: 0.5,
     sustain: 0.2,
-    release: 1,
+    release: 0,
   });
-  const [delay, setDelay] = useState({
-    time: 0.3,
-    feedback: 0.2,
-  });
+  const [delay, setDelay] = useState(DEFAULTS.delay);
+  const [clock, setClock] = useState(DEFAULTS.clock);
 
   React.useEffect(() => {
     const synth = document.getElementById('synth');
-    // synth.addEventListener('blur', () => {
-    //   document.getElementById('synth').focus();
-    // });
     synth.focus();
   }, []);
 
   useEffect(() => {
     mainGainRef.current = audioContext.current.createGain();
-    mainGainRef.current.gain.value = 0.4;
+    mainGainRef.current.gain.value = DEFAULTS.amp.level;
     filterRef.current = audioContext.current.createBiquadFilter();
     filterRef.current.type = 'lowpass';
     filterRef.current.frequency.setValueAtTime(
-      1000,
+      DEFAULTS.filter.frequency,
+      audioContext.current.currentTime
+    );
+    filterRef.current.Q.setValueAtTime(
+      DEFAULTS.filter.q,
       audioContext.current.currentTime
     );
     delayRef.current = audioContext.current.createDelay();
-    delayRef.current.delayTime.value = 0.9;
+    delayRef.current.delayTime.value = DEFAULTS.delay.time;
     feedbackRef.current = audioContext.current.createGain();
-    feedbackRef.current.gain.value = 0.1;
+    feedbackRef.current.gain.value = DEFAULTS.delay.feedback;
     delayRef.current.connect(feedbackRef.current);
     feedbackRef.current.connect(delayRef.current);
     filterRef.current.connect(delayRef.current);
     filterRef.current.connect(mainGainRef.current);
     delayRef.current.connect(mainGainRef.current);
-
     mainGainRef.current.connect(audioContext.current.destination);
   }, []);
+
+  useEffect(() => {
+    if (arp && pressedKeys.length > 0) {
+      const secondsPerBeat = 60.0 / clock.tempo;
+      const note = currentNote ? pressedKeys[currentNote] : pressedKeys[0];
+      if (note) {
+        playArpNote(note);
+      }
+      arpClock.current = setTimeout(() => {
+        const nextNote = currentNote + 1;
+        if (nextNote === pressedKeys.length) {
+          setCurrentNote(0);
+        } else {
+          setCurrentNote(nextNote);
+        }
+      }, secondsPerBeat * 1000);
+
+      return () => clearTimeout(arpClock.current);
+    }
+
+    return () => {};
+  }, [pressedKeys, currentNote, arp]);
+
+  const handleLatchChange = () => {
+    const newLatch = !latch;
+
+    if (!newLatch) {
+      console.log(pressedKeys);
+      pressedKeys.forEach((key) => stopNote(key, true));
+      setPressedKeys([]);
+    }
+
+    setLatch(!latch);
+  };
+
+  const handleArpChange = () => {
+    const newArpValue = !arp;
+    if (newArpValue) {
+      setCurrentNote(0);
+      pressedKeys.forEach((key) => destroyOscillator(key));
+    } else {
+      if (latch) {
+        pressedKeys.forEach((key) => createOscillator(key));
+      }
+      setCurrentNote(null);
+    }
+    setArp(newArpValue);
+  };
 
   const handleOsc1Change = (newOsc) => {
     setOsc1(newOsc);
@@ -85,6 +152,10 @@ export const Synth = () => {
 
   const handleOsc2Change = (newOsc) => {
     setOsc2(newOsc);
+  };
+
+  const handleClockChange = (newClock) => {
+    setClock(newClock);
   };
 
   const handleAmpChange = (newAmp) => {
@@ -102,7 +173,7 @@ export const Synth = () => {
       );
     }
     if (newFilter.q !== filter.q) {
-      filterRef.current.q.setValueAtTime(
+      filterRef.current.Q.setValueAtTime(
         newFilter.q,
         audioContext.current.currentTime
       );
@@ -124,9 +195,9 @@ export const Synth = () => {
     setDelay(newDelay);
   };
 
-  const playNote = (key) => {
+  const createOscillator = (key) => {
     const frequency = KEYS[key].frequency;
-    if (pressedKeys.includes(key) || !frequency) {
+    if (!frequency) {
       return;
     }
     const oscillator1 = audioContext.current.createOscillator();
@@ -162,7 +233,10 @@ export const Synth = () => {
     voicesRef.current[key] = {vca};
   };
 
-  const stopNote = (key) => {
+  const destroyOscillator = (key) => {
+    if (!voicesRef.current[key]) {
+      return;
+    }
     const {vca} = voicesRef.current[key];
     vca.gain.cancelAndHoldAtTime(audioContext.current.currentTime);
     vca.gain.linearRampToValueAtTime(
@@ -171,13 +245,39 @@ export const Synth = () => {
     );
   };
 
+  const playNote = (key) => {
+    if (latch && pressedKeys.includes(key)) {
+      stopNote(key, true);
+    }
+
+    if (pressedKeys.includes(key)) {
+      return;
+    }
+
+    setPressedKeys([...pressedKeys, key]);
+
+    if (arp) {
+      return;
+    }
+
+    createOscillator(key);
+  };
+
+  const stopNote = (key, force) => {
+    if (latch && !force) {
+      return;
+    }
+    destroyOscillator(key);
+    const filteredKeys = [...pressedKeys].filter((k) => k !== key);
+    setPressedKeys(filteredKeys);
+  };
+
   const handleKeyDown = (event) => {
     if (!KEYS[event.key]) {
       return;
     }
     const key = event.key;
     playNote(key);
-    setPressedKeys([...pressedKeys, key]);
   };
 
   const handleKeyUp = (event) => {
@@ -187,8 +287,6 @@ export const Synth = () => {
     }
 
     stopNote(key);
-    const filteredKeys = [...pressedKeys].filter((k) => k !== key);
-    setPressedKeys(filteredKeys);
   };
 
   const handleKeyTouchStart = (event) => {
@@ -198,7 +296,6 @@ export const Synth = () => {
     }
 
     playNote(key);
-    setPressedKeys([...pressedKeys, key]);
   };
 
   const handleKeyTouchEnd = (event) => {
@@ -208,8 +305,16 @@ export const Synth = () => {
     }
 
     stopNote(key);
-    const filteredKeys = [...pressedKeys].filter((k) => k !== key);
-    setPressedKeys(filteredKeys);
+  };
+
+  const playArpNote = (key) => {
+    createOscillator(key);
+    const {vca} = voicesRef.current[key];
+    vca.gain.cancelAndHoldAtTime(audioContext.current.currentTime + 1);
+    vca.gain.linearRampToValueAtTime(
+      0,
+      audioContext.current.currentTime + envelope.release + 1
+    );
   };
 
   return (
@@ -221,6 +326,7 @@ export const Synth = () => {
       tabIndex={0}
     >
       <div className="synth__controls">
+        <Clock title="CLK" clock={clock} onChange={handleClockChange} />
         <Oscillator title="OSC1" osc={osc1} onChange={handleOsc1Change} />
         <Oscillator title="OSC2" osc={osc2} onChange={handleOsc2Change} />
         <Amp title="AMP" amp={amp} onChange={handleAmpChange} />
@@ -237,6 +343,8 @@ export const Synth = () => {
         onKeyTouchStart={handleKeyTouchStart}
         onKeyTouchEnd={handleKeyTouchEnd}
       />
+      <Toggle label="LATCH" onChange={handleLatchChange} active={latch} />
+      <Toggle label="ARP" onChange={handleArpChange} active={arp} />
       <Analyser
         audioContext={audioContext.current}
         inputNode={mainGainRef.current}
