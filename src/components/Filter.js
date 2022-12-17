@@ -31,8 +31,8 @@ export function Filter({title, filter, onChange}) {
             min="0"
             max="10"
             step="0.5"
-            value={filter.resonance}
-            onChange={(event) => handleChange('resonance', event.target.value)}
+            value={filter.q}
+            onChange={(event) => handleChange('q', event.target.value)}
           />
         </div>
       </div>
