@@ -83,8 +83,6 @@ export const Synth = () => {
     synth.focus();
   }, []);
 
-  console.log(lfo);
-
   useEffect(() => {
     // Initialize main gain control
     mainGainRef.current = audioContext.current.createGain();
@@ -156,7 +154,6 @@ export const Synth = () => {
     const newLatch = !latch;
 
     if (!newLatch) {
-      console.log(pressedKeys);
       pressedKeys.forEach((key) => stopNote(key, true));
       setPressedKeys([]);
     }
