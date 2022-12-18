@@ -20,7 +20,7 @@ export function Delay({title, delay, onChange}) {
             max="1"
             step="0.1"
             value={delay.time}
-            onChange={(event) => handleChange('time', event.target.value)}
+            onChange={(value) => handleChange('time', value)}
             vertical
           />
         </div>
@@ -31,7 +31,7 @@ export function Delay({title, delay, onChange}) {
             max="1"
             step="0.1"
             value={delay.feedback}
-            onChange={(event) => handleChange('feedback', event.target.value)}
+            onChange={(value) => handleChange('feedback', value)}
             vertical
           />
         </div>

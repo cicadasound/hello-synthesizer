@@ -2,48 +2,40 @@ import React from 'react';
 
 import {RangeSlider} from './RangeSlider';
 
-export function Oscillator({title, osc, onChange}) {
+export function LFO({title, lfo, onChange}) {
   const handleChange = (key, value) => {
-    const newOsc = {...osc};
-    newOsc[key] = value;
-    onChange(newOsc);
+    const newLFO = {...lfo};
+    newLFO[key] = value;
+    onChange(newLFO);
   };
 
   const waveOptions = [
     {
-      name: 'Sawtooth',
-      value: 'sawtooth',
-    },
-    {
-      name: 'Square',
-      value: 'square',
+      name: 'Triangle',
+      value: 'triangle',
     },
     {
       name: 'Sine',
       value: 'sine',
     },
     {
-      name: 'Triangle',
-      value: 'triangle',
+      name: 'Square',
+      value: 'square',
     },
   ];
 
-  const octaveOptions = [
+  const destinationOptions = [
     {
-      name: '1',
-      value: '1',
+      name: 'FLTR',
+      value: 'filter',
     },
     {
-      name: '2',
-      value: '2',
+      name: 'OSC1',
+      value: 'osc1',
     },
     {
-      name: '3',
-      value: '3',
-    },
-    {
-      name: '4',
-      value: '4',
+      name: 'OSC2',
+      value: 'osc2',
     },
   ];
 
@@ -54,7 +46,7 @@ export function Oscillator({title, osc, onChange}) {
         <div className="control">
           <label>WAVE</label>
           <select
-            value={osc.type}
+            value={lfo.type}
             onChange={(event) => handleChange('type', event.target.value)}
           >
             {waveOptions.map(({value, name}) => {
@@ -67,12 +59,14 @@ export function Oscillator({title, osc, onChange}) {
           </select>
         </div>
         <div className="control">
-          <label>OCT</label>
+          <label>DEST</label>
           <select
-            value={osc.octave}
-            onChange={(event) => handleChange('octave', event.target.value)}
+            value={lfo.destination}
+            onChange={(event) =>
+              handleChange('destination', event.target.value)
+            }
           >
-            {octaveOptions.map(({value, name}) => {
+            {destinationOptions.map(({value, name}) => {
               return (
                 <option key={value} value={value}>
                   {name}
@@ -82,13 +76,23 @@ export function Oscillator({title, osc, onChange}) {
           </select>
         </div>
         <div className="control">
-          <label>DETUNE</label>
+          <label>FRQ</label>
           <RangeSlider
-            min="-12"
-            max="12"
-            step="0.5"
-            value={osc.detune}
-            onChange={(value) => handleChange('detune', value)}
+            min="0.1"
+            max="20"
+            step="0.1"
+            value={lfo.frequency}
+            onChange={(value) => handleChange('frequency', value)}
+          />
+        </div>
+        <div className="control">
+          <label>AMT</label>
+          <RangeSlider
+            min="0"
+            max="10000"
+            step="100"
+            value={lfo.level}
+            onChange={(value) => handleChange('level', value)}
           />
         </div>
       </div>

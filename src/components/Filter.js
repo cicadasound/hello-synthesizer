@@ -21,7 +21,7 @@ export function Filter({title, filter, onChange}) {
             max="5000"
             step="100"
             value={filter.frequency}
-            onChange={(event) => handleChange('frequency', event.target.value)}
+            onChange={(value) => handleChange('frequency', value)}
           />
         </div>
         <div className="control">
@@ -32,7 +32,7 @@ export function Filter({title, filter, onChange}) {
             max="10"
             step="0.5"
             value={filter.q}
-            onChange={(event) => handleChange('q', event.target.value)}
+            onChange={(value) => handleChange('q', value)}
           />
         </div>
       </div>
