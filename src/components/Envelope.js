@@ -20,7 +20,7 @@ export function Envelope({title, envelope, onChange}) {
             max="5"
             step="0.5"
             value={envelope.attack}
-            onChange={(event) => handleChange('attack', event.target.value)}
+            onChange={(value) => handleChange('attack', value)}
             vertical={true}
           />
         </div>
@@ -31,7 +31,7 @@ export function Envelope({title, envelope, onChange}) {
             max="5"
             step="0.5"
             value={envelope.decay}
-            onChange={(event) => handleChange('decay', event.target.value)}
+            onChange={(value) => handleChange('decay', value)}
             vertical={true}
           />
         </div>
@@ -42,7 +42,7 @@ export function Envelope({title, envelope, onChange}) {
             max="1"
             step="0.1"
             value={envelope.sustain}
-            onChange={(event) => handleChange('sustain', event.target.value)}
+            onChange={(value) => handleChange('sustain', value)}
             vertical={true}
           />
         </div>
@@ -53,7 +53,7 @@ export function Envelope({title, envelope, onChange}) {
             max="5"
             step="0.5"
             value={envelope.release}
-            onChange={(event) => handleChange('release', event.target.value)}
+            onChange={(value) => handleChange('release', value)}
             vertical={true}
           />
         </div>

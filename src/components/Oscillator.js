@@ -9,6 +9,44 @@ export function Oscillator({title, osc, onChange}) {
     onChange(newOsc);
   };
 
+  const waveOptions = [
+    {
+      name: 'Sawtooth',
+      value: 'sawtooth',
+    },
+    {
+      name: 'Square',
+      value: 'square',
+    },
+    {
+      name: 'Sine',
+      value: 'sine',
+    },
+    {
+      name: 'Triangle',
+      value: 'triangle',
+    },
+  ];
+
+  const octaveOptions = [
+    {
+      name: '1',
+      value: '1',
+    },
+    {
+      name: '2',
+      value: '2',
+    },
+    {
+      name: '3',
+      value: '3',
+    },
+    {
+      name: '4',
+      value: '4',
+    },
+  ];
+
   return (
     <section className="controls-section">
       <h2>{title}</h2>
@@ -16,24 +54,31 @@ export function Oscillator({title, osc, onChange}) {
         <div className="control">
           <label>WAVE</label>
           <select
-            selected={osc.type}
+            value={osc.type}
             onChange={(event) => handleChange('type', event.target.value)}
           >
-            <option value="sawtooth">Sawtooth</option>
-            <option value="square">Square</option>
-            <option value="sine">Sine</option>
+            {waveOptions.map(({value, name}) => {
+              return (
+                <option key={value} value={value}>
+                  {name}
+                </option>
+              );
+            })}
           </select>
         </div>
         <div className="control">
           <label>OCT</label>
           <select
-            selected={osc.octave}
+            value={osc.octave}
             onChange={(event) => handleChange('octave', event.target.value)}
           >
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
+            {octaveOptions.map(({value, name}) => {
+              return (
+                <option key={value} value={value}>
+                  {name}
+                </option>
+              );
+            })}
           </select>
         </div>
         <div className="control">
@@ -43,7 +88,7 @@ export function Oscillator({title, osc, onChange}) {
             max="12"
             step="0.5"
             value={osc.detune}
-            onChange={(event) => handleChange('detune', event.target.value)}
+            onChange={(value) => handleChange('detune', value)}
           />
         </div>
       </div>

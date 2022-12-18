@@ -21,7 +21,7 @@ export function Clock({clock, title, onChange}) {
             max="240"
             step="1"
             value={clock.tempo}
-            onChange={(event) => handleChange('tempo', event.target.value)}
+            onChange={(value) => handleChange('tempo', value)}
           />
         </div>
       </div>

@@ -15,10 +15,10 @@ import KEYS from '../data/KEYS';
 
 const DEFAULTS = {
   lfo: {
-    frequency: 200,
+    frequency: 1,
     level: 0,
     destination: 'filter',
-    type: 'sine',
+    type: 'triangle',
   },
   osc1: {
     type: 'sawtooth',
@@ -26,7 +26,7 @@ const DEFAULTS = {
     octave: 1,
   },
   osc2: {
-    type: 'sawtooth',
+    type: 'square',
     detune: 0,
     octave: 1,
   },
@@ -82,6 +82,8 @@ export const Synth = () => {
     const synth = document.getElementById('synth');
     synth.focus();
   }, []);
+
+  console.log(lfo);
 
   useEffect(() => {
     // Initialize main gain control
@@ -177,6 +179,13 @@ export const Synth = () => {
   };
 
   const handleLFOChange = (newLFO) => {
+    if (lfo.destination !== newLFO.destination) {
+      lfoGainRef.current.disconnect();
+
+      if (newLFO.destination === 'filter') {
+        lfoGainRef.current.connect(filterRef.current.frequency);
+      }
+    }
     if (lfoGainRef.current.gain.value !== newLFO.level) {
       lfoGainRef.current.gain.value = newLFO.level;
     }
@@ -253,6 +262,9 @@ export const Synth = () => {
       audioContext.current.currentTime
     );
     oscillator1.frequency.value = frequency * osc1.octave;
+    if (lfo.destination === 'osc1') {
+      lfoGainRef.current.connect(oscillator1.detune);
+    }
     oscillator1.start();
     const oscillator2 = audioContext.current.createOscillator();
     oscillator2.type = osc2.type;
@@ -261,12 +273,15 @@ export const Synth = () => {
       audioContext.current.currentTime
     );
     oscillator2.frequency.value = frequency * osc2.octave;
+    if (lfo.destination === 'osc2') {
+      lfoGainRef.current.connect(oscillator2.detune);
+    }
     oscillator2.start();
     const vca = audioContext.current.createGain();
     vca.gain.value = 0;
     vca.gain.setValueAtTime(0, audioContext.current.currentTime);
     vca.gain.linearRampToValueAtTime(
-      1,
+      0.1,
       audioContext.current.currentTime + envelope.attack
     );
     vca.gain.linearRampToValueAtTime(
@@ -371,9 +386,6 @@ export const Synth = () => {
       onKeyDown={handleKeyDown}
       tabIndex={0}
     >
-      <div>
-        LFO {lfo.destination} {lfo.level} {lfo.frequency} {lfo.type}
-      </div>
       <div className="synth__controls">
         <section className="controls-section">
           <div className="latch-group">

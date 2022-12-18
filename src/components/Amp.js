@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
-import { RangeSlider } from "./RangeSlider";
+import {RangeSlider} from './RangeSlider';
 
-export function Amp({ title, amp, onChange }) {
+export function Amp({title, amp, onChange}) {
   const handleChange = (key, value) => {
-    const newAmp = { ...amp };
+    const newAmp = {...amp};
     newAmp[key] = value;
     onChange(newAmp);
   };
@@ -21,7 +21,7 @@ export function Amp({ title, amp, onChange }) {
             max="0.8"
             step="0.05"
             value={amp.level}
-            onChange={(event) => handleChange("level", event.target.value)}
+            onChange={(value) => handleChange('level', value)}
           />
         </div>
       </div>

@@ -9,6 +9,36 @@ export function LFO({title, lfo, onChange}) {
     onChange(newLFO);
   };
 
+  const waveOptions = [
+    {
+      name: 'Triangle',
+      value: 'triangle',
+    },
+    {
+      name: 'Sine',
+      value: 'sine',
+    },
+    {
+      name: 'Square',
+      value: 'square',
+    },
+  ];
+
+  const destinationOptions = [
+    {
+      name: 'FLTR',
+      value: 'filter',
+    },
+    {
+      name: 'OSC1',
+      value: 'osc1',
+    },
+    {
+      name: 'OSC2',
+      value: 'osc2',
+    },
+  ];
+
   return (
     <section className="controls-section">
       <h2>{title}</h2>
@@ -16,45 +46,53 @@ export function LFO({title, lfo, onChange}) {
         <div className="control">
           <label>WAVE</label>
           <select
-            selected={lfo.type}
+            value={lfo.type}
             onChange={(event) => handleChange('type', event.target.value)}
           >
-            <option value="sawtooth">Sawtooth</option>
-            <option value="square">Square</option>
-            <option value="sine">Sine</option>
+            {waveOptions.map(({value, name}) => {
+              return (
+                <option key={value} value={value}>
+                  {name}
+                </option>
+              );
+            })}
           </select>
         </div>
         <div className="control">
           <label>DEST</label>
           <select
-            selected={lfo.destination}
+            value={lfo.destination}
             onChange={(event) =>
               handleChange('destination', event.target.value)
             }
           >
-            <option value="osc1">OSC1</option>
-            <option value="osc2">OSC2</option>
-            <option value="filter">FLTR</option>
+            {destinationOptions.map(({value, name}) => {
+              return (
+                <option key={value} value={value}>
+                  {name}
+                </option>
+              );
+            })}
           </select>
         </div>
         <div className="control">
           <label>FRQ</label>
           <RangeSlider
-            min="20"
-            max="2000"
-            step="20"
+            min="0.1"
+            max="20"
+            step="0.1"
             value={lfo.frequency}
-            onChange={(event) => handleChange('frequency', event.target.value)}
+            onChange={(value) => handleChange('frequency', value)}
           />
         </div>
         <div className="control">
           <label>AMT</label>
           <RangeSlider
             min="0"
-            max="1"
-            step="0.05"
+            max="10000"
+            step="100"
             value={lfo.level}
-            onChange={(event) => handleChange('level', event.target.value)}
+            onChange={(value) => handleChange('level', value)}
           />
         </div>
       </div>
