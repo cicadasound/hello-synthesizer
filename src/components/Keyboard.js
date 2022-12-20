@@ -3,12 +3,23 @@ import classnames from 'classnames';
 
 import KEYS from '../data/KEYS';
 
-export function Keyboard({pressedKeys, onKeyTouchStart, onKeyTouchEnd}) {
+export function Keyboard({
+  pressedKeys,
+  currentNote,
+  onKeyTouchStart,
+  onKeyTouchEnd,
+}) {
   const keys = Object.entries(KEYS);
   const keyboardMarkup = keys.map(([keyboardKey, key]) => {
     const keyActive = Boolean(pressedKeys.find((n) => n.name === key.note));
+    const keyCurrent =
+      currentNote !== null && pressedKeys[currentNote]
+        ? pressedKeys[currentNote].name === key.note
+        : false;
     const keyClasses = classnames('key', {
       'key--black': key.note.includes('#'),
+      'key--current': keyCurrent,
+      'key--active': keyActive,
     });
     return (
       <button
