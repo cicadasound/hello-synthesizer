@@ -184,9 +184,10 @@ a:focus {
   margin-left: -5.2rem;
 }
 
-.key[data-active='true'] {
+.key--active {
   color: var(--active-border-color);
   border-color: var(--active-border-color);
+  border-width: 0.3rem;
 }
 
 .key__note {
@@ -239,9 +240,24 @@ a:focus {
   background: var(--main-background);
 }
 
-.key[data-active='true'] .key__keyboard-key,
-.key[data-active='true'] .key__keyboard-key::before {
+.key--active .key__keyboard-key,
+.key--active .key__keyboard-key::before {
   border-color: var(--tangerine);
+}
+
+.key--current {
+  color: var(--white);
+  background-color: var(--tangerine);
+  border-color: var(--white);
+}
+
+.key--current .key__keyboard-key,
+.key--current .key__keyboard-key::before {
+  border-color: var(--white);
+}
+
+.key--current .key__keyboard-key-cap {
+  background-color: var(--tangerine);
 }
 
 @media (min-width: 481px) and (max-width: 700px) {

@@ -337,13 +337,13 @@ export const Synth = () => {
     const filteredKeys = [...pressedKeys].filter((n) => n.name !== note.name);
     setPressedKeys(filteredKeys);
   };
-  
+
   const handleKeyDown = (event) => {
     const key = event.key;
     console.log(event);
     if (key === 'Escape') {
       pressedKeys.forEach((note) => {
-        stopNote(note, true)
+        stopNote(note, true);
       });
       setPressedKeys([]);
       return;
@@ -352,7 +352,7 @@ export const Synth = () => {
       setMidiSettingsVisible(!midiSettingsVisible);
       return;
     }
-    
+
     if (!KEYS[key]) {
       return;
     }
@@ -454,6 +454,7 @@ export const Synth = () => {
         pressedKeys={pressedKeys}
         onKeyTouchStart={handleKeyTouchStart}
         onKeyTouchEnd={handleKeyTouchEnd}
+        currentNote={currentNote}
       />
       <div id="settings" className="panel">
         <Midi
