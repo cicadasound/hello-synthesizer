@@ -20,6 +20,7 @@ export function Keyboard({pressedKeys, onKeyTouchStart, onKeyTouchEnd}) {
         onMouseUp={onKeyTouchEnd}
         onTouchStart={onKeyTouchStart}
         onTouchEnd={onKeyTouchEnd}
+        tabIndex="-1"
       >
         <div className="key__note">{key.note}</div>
         <div className="key__keyboard-key">
