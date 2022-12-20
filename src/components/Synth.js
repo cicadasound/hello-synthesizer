@@ -397,9 +397,9 @@ export const Synth = () => {
           inputNode={mainGainRef.current}
         />
         <Module dark>
-          <div>
+          <a href="https://cicadasound.ca">
             <CicadaIcon className="logo" />
-          </div>
+          </a>
         </Module>
       </div>
       <div className="synth__controls">
