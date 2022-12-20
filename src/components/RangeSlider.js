@@ -37,10 +37,59 @@ export function RangeSlider({value, onChange, vertical, ...rest}) {
     'range-container--vertical': vertical,
   });
 
+  const ticks = [...Array(9).keys()];
+
+  const createTicks = (second) => {
+    return ticks.map((tick) => {
+      const even = (tick + 1) % 2 == 0;
+      const size = even ? 10 : 40;
+      const firstOffset = even ? 5 : -10;
+      const secondOffset = even ? 0 : -10;
+      const offset = second ? secondOffset : firstOffset;
+
+      const tickClassName = classnames('range-ticks__tick', {
+        'range-ticks__tick--centre': tick === 4,
+      });
+
+      return vertical ? (
+        <rect
+          key={tick}
+          className={tickClassName}
+          x={offset}
+          y={`${(tick / ticks.length) * 100}%`}
+          width={size}
+          height="1"
+        ></rect>
+      ) : (
+        <rect
+          key={tick}
+          className={tickClassName}
+          x={`${(tick / ticks.length) * 100}%`}
+          y={offset}
+          width="1"
+          height={size}
+        ></rect>
+      );
+    });
+  };
+
+  const firstTicks = createTicks(false);
+  const secondTicks = createTicks(true);
+
+  const orient = vertical ? {orient: 'vertical'} : {};
+
   return (
     <div className={className}>
+      <svg role="presentation" className="range-ticks">
+        {firstTicks}
+      </svg>
+      <svg role="presentation" className="range-ticks range-ticks--bottom">
+        {secondTicks}
+      </svg>
       <input
         type="range"
+        {...orient}
+        className="range-container__input"
         {...rest}
         value={value}
         onChange={handleChange}

@@ -64,12 +64,8 @@ const KEYS = {
     frequency: '311.13',
   },
   ';': {
-    note: 'E',
+    note: 'E4',
     frequency: '329.63',
-  },
-  "'": {
-    note: 'F',
-    frequency: '349.23',
   },
 };
 

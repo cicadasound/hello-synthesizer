@@ -1,6 +1,10 @@
 import React from 'react';
 
 import {RangeSlider} from './RangeSlider';
+import {ToggleGroup} from './ToggleGroup';
+import {Module} from './Module';
+
+import {TriangleIcon, SineIcon, SquareIcon, SawtoothIcon} from '../icons';
 
 export function Oscillator({title, osc, onChange}) {
   const handleChange = (key, value) => {
@@ -11,87 +15,74 @@ export function Oscillator({title, osc, onChange}) {
 
   const waveOptions = [
     {
-      name: 'Sawtooth',
+      label: 'Sawtooth',
       value: 'sawtooth',
+      icon: SawtoothIcon,
     },
     {
-      name: 'Square',
+      label: 'Square',
       value: 'square',
+      icon: SquareIcon,
     },
     {
-      name: 'Sine',
+      label: 'Sine',
       value: 'sine',
+      icon: SineIcon,
     },
     {
-      name: 'Triangle',
+      label: 'Triangle',
       value: 'triangle',
+      icon: TriangleIcon,
     },
   ];
 
   const octaveOptions = [
     {
-      name: '1',
-      value: '1',
+      label: '4',
+      value: 1,
     },
     {
-      name: '2',
-      value: '2',
+      label: '8',
+      value: 2,
     },
     {
-      name: '3',
-      value: '3',
+      label: '16',
+      value: 3,
     },
     {
-      name: '4',
-      value: '4',
+      label: '32',
+      value: 4,
     },
   ];
 
   return (
-    <section className="controls-section">
-      <h2>{title}</h2>
-      <div className="controls-section__group controls-section__group--vertical">
-        <div className="control">
-          <label>WAVE</label>
-          <select
-            value={osc.type}
-            onChange={(event) => handleChange('type', event.target.value)}
-          >
-            {waveOptions.map(({value, name}) => {
-              return (
-                <option key={value} value={value}>
-                  {name}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-        <div className="control">
-          <label>OCT</label>
-          <select
-            value={osc.octave}
-            onChange={(event) => handleChange('octave', event.target.value)}
-          >
-            {octaveOptions.map(({value, name}) => {
-              return (
-                <option key={value} value={value}>
-                  {name}
-                </option>
-              );
-            })}
-          </select>
-        </div>
-        <div className="control">
-          <label>DETUNE</label>
-          <RangeSlider
-            min="-12"
-            max="12"
-            step="0.5"
-            value={osc.detune}
-            onChange={(value) => handleChange('detune', value)}
-          />
-        </div>
+    <Module title={title} vertical>
+      <div className="control">
+        <label className="visually-hidden">WAVE</label>
+        <ToggleGroup
+          options={waveOptions}
+          selected={osc.type}
+          onChange={(type) => handleChange('type', type)}
+        />
       </div>
-    </section>
+      <div className="control">
+        <label className="visually-hidden">OCT</label>
+        <ToggleGroup
+          options={octaveOptions}
+          selected={osc.octave}
+          onChange={(octave) => handleChange('octave', octave)}
+        />
+      </div>
+      <div className="control">
+        <label>DETUNE</label>
+        <RangeSlider
+          min="-12"
+          max="12"
+          step="0.5"
+          value={osc.detune}
+          onChange={(value) => handleChange('detune', value)}
+        />
+      </div>
+    </Module>
   );
 }

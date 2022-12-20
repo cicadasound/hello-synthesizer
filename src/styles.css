@@ -2,28 +2,34 @@
   --black: #000;
   --white: #fff;
   --light-green: #d9e5d6;
-  --blue: #00a7e1;
-  --yellow: #eddea4;
-  --tangerine: #f7a072;
+  --grey-200: #b7b7b7;
+  --grey-300: #353535;
+  --grey-500: #6e6e6e;
+  --grey-600: #373737;
+  --grey-700: #222222;
+  --tangerine: #ff8a00;
 
-  --border-color: var(--tangerine);
+  --inner-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.5);
+  --border-color: var(--grey-200);
+  --active-border-color: var(--tangerine);
   --text-color: var(--black);
-  --main-background: var(--light-green);
-  --light-background: var(--yellow);
+  --main-background: var(--grey-600);
 }
 
 html {
   margin: 0;
   padding: 0;
+  font-size: 62.5%;
 }
 
 body {
   color: var(--text-color);
   background-color: var(--main-background);
-  font-family: 'Work Sans', sans-serif;
-  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
   margin: 0;
   padding: 0;
+  font-size: 1.6rem;
 }
 
 .App {
@@ -33,28 +39,78 @@ body {
 .synth {
   display: flex;
   flex-direction: column;
+  gap: 2rem;
   outline: 0;
+  max-width: 100rem;
+  margin: 2rem auto;
 }
 
 .synth__controls {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 2rem;
-}
-
-.controls-section {
-  display: flex;
-  flex-direction: column;
-}
-
-.controls-section__group {
-  display: flex;
   gap: 1rem;
 }
 
-.controls-section__group--vertical {
+.module {
+  flex: 1 1 auto;
+  display: flex;
   flex-direction: column;
+  justify-content: center;
+  background: var(--grey-600);
+  border: 0.1rem solid var(--grey-200);
+  border-radius: 0.8rem;
+  padding: 1.2rem;
+  color: white;
+  position: relative;
+}
+
+.module--dark {
+  background-color: var(--grey-700);
+}
+
+.module h2 {
+  font-size: 1.2rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.module__group {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.module__group--vertical {
+  flex-direction: column;
+}
+
+.corner-screw {
+  position: absolute;
+  --corner-screw-vertical-offset: 0;
+  --corner-screw-horizontal-offset: 0.4rem;
+  scale: 0.5;
+}
+
+.corner-screw--top-left {
+  top: var(--corner-screw-vertical-offset);
+  left: var(--corner-screw-horizontal-offset);
+}
+
+.corner-screw--top-right {
+  top: var(--corner-screw-vertical-offset);
+  right: var(--corner-screw-horizontal-offset);
+}
+
+.corner-screw--bottom-left {
+  bottom: var(--corner-screw-vertical-offset);
+  left: var(--corner-screw-horizontal-offset);
+}
+
+.corner-screw--bottom-right {
+  bottom: var(--corner-screw-vertical-offset);
+  right: var(--corner-screw-horizontal-offset);
 }
 
 .control {
@@ -68,6 +124,13 @@ body {
   flex-direction: column;
 }
 
+.control label {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  text-align: center;
+  margin: 0.8rem 0;
+}
+
 @media (min-width: 681px) {
   .synth__controls {
     flex-direction: row;
@@ -77,15 +140,15 @@ body {
 .keyboard {
   position: relative;
   display: flex;
-  justify-content: center;
-  margin: 2rem;
+  justify-content: space-around;
 }
 
 .key {
   color: var(--border-color);
-  background-color: var(--white);
-  border: 1px solid var(--border-color);
-  flex: 0 0 4rem;
+  background: var(--grey-600);
+  border: 0.1rem solid var(--border-color);
+  border-radius: 0 0 0.8rem 0.8rem;
+  flex: 0 0 10rem;
   height: 20rem;
   display: flex;
   flex-direction: column;
@@ -95,27 +158,33 @@ body {
   user-select: none;
 }
 
+.key:first-of-type {
+  border-radius: 0.8rem;
+}
+
+.key:last-of-type {
+  border-radius: 0 0.8rem 0.8rem 0.8rem;
+}
+
 .key:focus {
   outline: 0;
 }
 
 .key--black {
   position: relative;
-  flex: 0 0 2.8rem;
+  flex: 0 0 5rem;
   height: 10rem;
   padding: 0;
-  background-color: var(--black);
-  color: var(--white);
   transform: translate(50%, 0);
-  margin-left: -3rem;
+  margin-left: -5.2rem;
 }
 
 .key[data-active='true'] {
-  background-color: var(--light-background);
+  color: var(--active-border-color);
+  border-color: var(--active-border-color);
 }
 
 .key__note {
-  color: var(--text-color);
   user-select: none;
   -webkit-user-select: none;
 }
@@ -123,14 +192,6 @@ body {
 .key__keyboard-key {
   user-select: none;
   -webkit-user-select: none;
-}
-
-.key--black .key__note {
-  color: var(--white);
-}
-
-.key--black .key__keyboard-key {
-  color: var(--tangerine);
 }
 
 @media (min-width: 481px) and (max-width: 700px) {
@@ -145,47 +206,268 @@ body {
   }
 }
 
+.range-container {
+  --range-thumb-border-width: 0.1rem;
+  --range-thumb-border: var(--range-thumb-border-width) solid var(--grey-300);
+  --range-thumb-border-radius: 0.3rem;
+  --range-thumb-shadow: 0 0.1rem 0.3rem 0.1rem rgba(0, 0, 0, 0.2),
+    inset 0 0.2rem 0 rgba(255, 255, 255, 0.5);
+  --range-thumb-height: 2.5rem;
+  --range-thumb-width: 1.5rem;
+  --range-thumb-background: var(--grey-500);
+  --range-track-background: var(--white);
+
+  position: relative;
+  margin-bottom: 1.6rem;
+}
+
+.range-container--vertical {
+  overflow: hidden;
+}
+
 .range-container input[type='range'] {
   outline: none;
   background: transparent;
+  transform: translateX(0);
+  width: 18rem;
 }
 
-.range-container--vertical input[type='range'] {
+input[type='range'][orient='vertical'] {
   transform: rotate(270deg);
-  margin-top: 50px;
-  margin-left: -2.4rem;
-  margin-right: -2.4rem;
-  height: 6rem;
-  width: 8rem;
+  width: 14rem;
+  height: 14rem;
+  margin-left: -5rem;
+  margin-right: -5rem;
+}
+
+.range-ticks {
+  width: calc(100%);
+  height: 1.4rem;
+  position: absolute;
+  top: -0.2rem;
+  left: 1rem;
+}
+
+.range-ticks--bottom {
+  top: calc(100% - 0.1rem);
+}
+
+.range-container--vertical .range-ticks {
+  top: 1rem;
+  left: 0;
+  height: calc(100% - 0.6rem);
+  width: 1.6rem;
+}
+
+.range-container--vertical .range-ticks--bottom {
+  right: 0;
+  left: auto;
+}
+
+.range-ticks__tick {
+  fill: var(--white);
+}
+
+.range-ticks__tick--centre {
+  fill: var(--tangerine);
+}
+
+input[type='range'] {
+  -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
+  width: 100%; /* Specific width is required for Firefox. */
+  background: transparent; /* Otherwise white in Chrome */
+}
+
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+
+input[type='range']:focus {
+  outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+}
+
+input[type='range']::-ms-track {
+  width: 100%;
+  cursor: pointer;
+
+  /* Hides the slider so custom styles can be added */
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+/* Special styling for WebKit/Blink */
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  border: var(--range-thumb-border);
+  border-radius: var(--range-thumb-border-radius);
+  height: var(--range-thumb-height);
+  width: var(--range-thumb-width);
+  background: var(--range-thumb-background);
+  box-shadow: var(--range-thumb-shadow);
+  cursor: pointer;
+  margin-top: calc(-1 * (var(--range-thumb-height) / 2) + 0.1rem);
+}
+
+/* All the same stuff for Firefox */
+input[type='range']::-moz-range-thumb {
+  border: var(--range-thumb-border);
+  border-radius: var(--range-thumb-border-radius);
+  height: var(--range-thumb-height);
+  width: var(--range-thumb-width);
+  background: var(--range-thumb-background);
+  box-shadow: var(--range-thumb-shadow);
+  cursor: pointer;
+}
+
+/* All the same stuff for IE */
+input[type='range']::-ms-thumb {
+  border: var(--range-thumb-border);
+  border-radius: var(--range-thumb-border-radius);
+  height: var(--range-thumb-height);
+  width: var(--range-thumb-width);
+  background: var(--range-thumb-background);
+  box-shadow: var(--range-thumb-shadow);
+  cursor: pointer;
+}
+
+input[type='range']::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 0.1rem;
+  cursor: pointer;
+  background: var(--range-track-background);
+}
+
+input[type='range']:focus::-webkit-slider-runnable-track {
+  background: var(--range-track-background);
+}
+
+input[type='range']::-moz-range-track {
+  width: 100%;
+  height: 0.2rem;
+  cursor: pointer;
+  background: var(--range-track-background);
+}
+
+input[type='range']::-ms-track {
+  width: 100%;
+  height: 0.1rem;
+  cursor: pointer;
+  background: var(--range-track-background);
+  cursor: pointer;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
 }
 
 .analyser {
-  width: 100%;
-  height: 100px;
+  width: 60rem;
+  height: 10rem;
 }
 
 .toggle {
-  display: inline-flex;
-  gap: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  padding: 0.8rem 0.4rem;
+  gap: 1.5rem;
   align-items: center;
+  background: var(--grey-500);
+  border: 0.1rem solid var(--grey-600);
+  box-shadow: inset 0px 2px 0px rgba(255, 255, 255, 0.5);
+  border-radius: 0.6rem;
 }
 
-.toggle .toggle__input {
-  border: 1px solid black;
-  background: transparent;
-  width: 1.6rem;
-  height: 1.6rem;
+.toggle__label {
+  font-size: 0.6rem;
+  color: var(--white);
 }
 
-.toggle--active .toggle__input {
+.toggle__indicator {
+  position: relative;
+  display: block;
+  background: var(--grey-200);
+  border-radius: 50%;
+  width: 0.4rem;
+  height: 0.4rem;
+}
+
+.toggle--active .toggle__indicator {
   background-color: var(--tangerine);
-  color: white;
+}
+
+.toggle--active .toggle__indicator::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+  z-index: 0;
+  filter: blur(2px);
+  background-color: var(--tangerine);
 }
 
 .latch-group {
   display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
   justify-content: center;
-  height: 100%;
+}
+
+.toggle-group {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.toggle-group__toggle {
+  padding: 0 0.4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--white);
+  background: var(--grey-500);
+  border: 1px solid var(--grey-600);
+  box-shadow: inset 0px 0.1rem 0 rgba(255, 255, 255, 0.5);
+  border-radius: 0.3rem;
+  flex: 1 1 auto;
+}
+
+.toggle-group__toggle svg {
+  width: 2.8rem;
+  height: 2.8rem;
+}
+
+.toggle-group__toggle--active {
+  background: #ff8a00;
+  border: 1px solid var(--grey-600);
+  box-shadow: inset 0 -0.2rem 0 rgba(255, 255, 255, 0.5);
+  border-radius: 0.3rem;
+}
+
+.toggle-group__toggle-label {
+  font-size: 1.2rem;
+  padding: 0.8rem 0.4rem;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.logo {
+  width: 6rem;
+  height: 6rem;
+  margin: 2rem 4rem;
+  display: block;
+}
+
+.visually-hidden:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
 }

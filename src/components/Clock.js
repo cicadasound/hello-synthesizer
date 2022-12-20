@@ -10,21 +10,15 @@ export function Clock({clock, title, onChange}) {
   };
 
   return (
-    <section className="controls-section">
-      <h2>{title}</h2>
-      <div className="controls-section__group controls-section__group--vertical">
-        <div className="control">
-          <label>TEMPO</label>
-          <RangeSlider
-            vertical
-            min="20"
-            max="240"
-            step="1"
-            value={clock.tempo}
-            onChange={(value) => handleChange('tempo', value)}
-          />
-        </div>
-      </div>
-    </section>
+    <div className="control">
+      <label>SPEED</label>
+      <RangeSlider
+        min="20"
+        max="240"
+        step="1"
+        value={clock.tempo}
+        onChange={(value) => handleChange('tempo', value)}
+      />
+    </div>
   );
 }
