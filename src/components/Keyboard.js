@@ -6,7 +6,7 @@ import KEYS from '../data/KEYS';
 export function Keyboard({pressedKeys, onKeyTouchStart, onKeyTouchEnd}) {
   const keys = Object.entries(KEYS);
   const keyboardMarkup = keys.map(([keyboardKey, key]) => {
-    const keyActive = pressedKeys.includes(keyboardKey);
+    const keyActive = Boolean(pressedKeys.find((n) => n.name === key.note));
     const keyClasses = classnames('key', {
       'key--black': key.note.includes('#'),
     });

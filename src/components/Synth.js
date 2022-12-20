@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef, useCallback} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 
 import {Analyser} from './Analyser';
 import {Oscillator} from './Oscillator';
@@ -7,7 +7,6 @@ import {Filter} from './Filter';
 import {Envelope} from './Envelope';
 import {Delay} from './Delay';
 import {Keyboard} from './Keyboard';
-import {Toggle} from './Toggle';
 import {Control} from './Control';
 import {LFO} from './LFO';
 import {Module} from './Module';
@@ -48,7 +47,7 @@ const DEFAULTS = {
   control: {
     tempo: 90,
     latch: false,
-    arp: false
+    arp: false,
   },
   envelope: {
     attack: 0,
@@ -70,9 +69,9 @@ export const Synth = () => {
   const envelopeRef = useRef(DEFAULTS.envelope);
   const lfoRef = useRef(null);
   const lfoGainRef = useRef(null);
+  const arpClockRef = useRef(null);
 
   const [currentNote, setCurrentNote] = useState(null);
-  const arpClock = useRef(null);
   const [pressedKeys, setPressedKeys] = useState([]);
   const [osc1, setOsc1] = useState(DEFAULTS.osc1);
   const [osc2, setOsc2] = useState(DEFAULTS.osc2);
@@ -82,6 +81,7 @@ export const Synth = () => {
   const [envelope, setEnvelope] = useState(DEFAULTS.envelope);
   const [delay, setDelay] = useState(DEFAULTS.delay);
   const [control, setControl] = useState(DEFAULTS.control);
+  const [midiSettingsVisible, setMidiSettingsVisible] = useState(false);
 
   React.useEffect(() => {
     const synth = document.getElementById('synth');
@@ -140,7 +140,7 @@ export const Synth = () => {
       if (note) {
         playArpNote(note);
       }
-      arpClock.current = setTimeout(() => {
+      arpClockRef.current = setTimeout(() => {
         const nextNote = currentNote + 1;
         if (nextNote === pressedKeys.length) {
           setCurrentNote(0);
@@ -149,7 +149,7 @@ export const Synth = () => {
         }
       }, secondsPerBeat * 1000);
 
-      return () => clearTimeout(arpClock.current);
+      return () => clearTimeout(arpClockRef.current);
     }
 
     return () => {};
@@ -251,20 +251,18 @@ export const Synth = () => {
 
   const handleControlChange = (newControl) => {
     if (control.latch !== newControl.latch && !newControl.latch) {
-      pressedKeys.forEach((key) => stopNote(key, true));
+      pressedKeys.forEach((note) => stopNote(note, true));
       setPressedKeys([]);
     }
 
     if (newControl.arp && newControl.arp !== control.arp) {
       setCurrentNote(0);
-      pressedKeys.forEach((key) => {
-        const note = NOTES.find((n) => n.name === KEYS[key].note);
+      pressedKeys.forEach((note) => {
         destroyOscillator(note);
       });
     } else if (newControl.arp !== control.arp) {
       if (newControl.latch) {
-        pressedKeys.forEach((key) => {
-          const note = NOTES.find((n) => n.name === KEYS[key].note);
+        pressedKeys.forEach((note) => {
           createOscillator(note);
         });
       }
@@ -312,61 +310,91 @@ export const Synth = () => {
     setDelay(newDelay);
   };
 
-  const playNote = (key) => {
-    if (control.latch && pressedKeys.includes(key)) {
-      stopNote(key, true);
+  const playNote = (note) => {
+    const notePressed = pressedKeys.find((n) => n.name === note.name);
+    if (control.latch && notePressed) {
+      stopNote(note, true);
     }
 
-    if (pressedKeys.includes(key)) {
+    if (notePressed) {
       return;
     }
 
-    setPressedKeys([...pressedKeys, key]);
+    setPressedKeys([...pressedKeys, note]);
 
     if (control.arp) {
       return;
     }
 
-    const note = NOTES.find((n) => n.name === KEYS[key].note);
     createOscillator(note);
   };
 
-  const stopNote = (key, force) => {
+  const stopNote = (note, force) => {
     if (control.latch && !force) {
       return;
     }
-    const note = NOTES.find((n) => n.name === KEYS[key].note);
     destroyOscillator(note);
-    const filteredKeys = [...pressedKeys].filter((k) => k !== key);
+    const filteredKeys = [...pressedKeys].filter((n) => n.name !== note.name);
     setPressedKeys(filteredKeys);
   };
-
+  
   const handleKeyDown = (event) => {
     const key = event.key;
-    if (KEYS[key]) {
-      playNote(key);
+    console.log(event);
+    if (key === 'Escape') {
+      pressedKeys.forEach((note) => {
+        stopNote(note, true)
+      });
+      setPressedKeys([]);
+      return;
+    } else if (key === 'M' && event.shiftKey) {
+      console.log('midi', event);
+      setMidiSettingsVisible(!midiSettingsVisible);
+      return;
+    }
+    
+    if (!KEYS[key]) {
+      return;
+    }
+
+    const note = NOTES.find((n) => n.name === KEYS[key].note);
+    if (note) {
+      playNote(note);
     }
   };
 
   const handleKeyUp = (event) => {
     const key = event.key;
-    if (KEYS[key]) {
-      stopNote(key);
+
+    if (!KEYS[key]) {
+      return;
+    }
+
+    const note = NOTES.find((n) => n.name === KEYS[key].note);
+    if (note) {
+      stopNote(note);
     }
   };
 
   const handleKeyTouchStart = (event) => {
     const key = event.target.getAttribute('data-key');
-    playNote(key);
+    if (!KEYS[key]) {
+      return;
+    }
+    const note = NOTES.find((n) => n.name === KEYS[key].note);
+    playNote(note);
   };
 
   const handleKeyTouchEnd = (event) => {
     const key = event.target.getAttribute('data-key');
-    stopNote(key);
+    if (!KEYS[key]) {
+      return;
+    }
+    const note = NOTES.find((n) => n.name === KEYS[key].note);
+    stopNote(note);
   };
 
-  const playArpNote = (key) => {
-    const note = NOTES.find((n) => n.name === KEYS[key].note);
+  const playArpNote = (note) => {
     createOscillator(note);
     const {vca} = voicesRef.current[note.name];
     vca.gain.cancelAndHoldAtTime(audioContextRef.current.currentTime + 1);
@@ -415,7 +443,11 @@ export const Synth = () => {
         <Delay title="DELAY" delay={delay} onChange={handleDelayChange} />
       </div>
       <div className="synth__controls">
-        <Control control={control} title="CONTROL" onChange={handleControlChange} />
+        <Control
+          control={control}
+          title="CONTROL"
+          onChange={handleControlChange}
+        />
         <LFO title="LFO" lfo={lfo} onChange={handleLFOChange} />
       </div>
       <Keyboard
@@ -425,7 +457,7 @@ export const Synth = () => {
       />
       <div id="settings" className="panel">
         <Midi
-          hide
+          hidden={!midiSettingsVisible}
           audioContext={audioContextRef.current}
           onNotePlayed={createOscillator}
           onNoteStopped={destroyOscillator}
