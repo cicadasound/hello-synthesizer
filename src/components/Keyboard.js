@@ -21,8 +21,10 @@ export function Keyboard({pressedKeys, onKeyTouchStart, onKeyTouchEnd}) {
         onTouchStart={onKeyTouchStart}
         onTouchEnd={onKeyTouchEnd}
       >
-        <p className="key__note">{key.note}</p>
-        <p className="key__keyboard-key">{keyboardKey}</p>
+        <div className="key__note">{key.note}</div>
+        <div className="key__keyboard-key">
+          <div className="key__keyboard-key-cap">{keyboardKey}</div>
+        </div>
       </button>
     );
   });
