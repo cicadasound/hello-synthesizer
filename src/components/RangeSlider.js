@@ -1,7 +1,7 @@
 import React, {useRef, useEffect} from 'react';
 import classnames from 'classnames';
 
-export function RangeSlider({value, onChange, vertical, ...rest}) {
+export function RangeSlider({value, onChange, vertical, highlightCentre, ...rest}) {
   const sliderRef = useRef(null);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export function RangeSlider({value, onChange, vertical, ...rest}) {
       const offset = second ? secondOffset : firstOffset;
 
       const tickClassName = classnames('range-ticks__tick', {
-        'range-ticks__tick--centre': tick === 4,
+        'range-ticks__tick--centre': tick === 4 && highlightCentre,
       });
 
       return vertical ? (

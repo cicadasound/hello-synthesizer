@@ -73,6 +73,7 @@ body {
   font-size: 1.2rem;
   line-height: 1.2;
   text-align: center;
+  margin: 0.4rem 0;
 }
 
 .module__group {
@@ -189,9 +190,51 @@ body {
   -webkit-user-select: none;
 }
 
+.key__keyboard-key::before {
+  display: block;
+  content: '';
+  border: 0.1rem solid var(--border-color);
+  border-radius: 0.3rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  position: absolute;
+  bottom: -0.4rem;
+  left: -0.1rem;
+  z-index: -1;
+}
+
 .key__keyboard-key {
   user-select: none;
   -webkit-user-select: none;
+  position: relative;
+  z-index: 1;
+  background: var(--main-background);
+  border: 0.1rem solid var(--border-color);
+  border-radius: 0.3rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  margin-top: 2rem;
+  margin-bottom: 1.6rem;
+}
+
+.key__keyboard-key-cap {
+  width: 2.6rem;
+  height: 2.6rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--main-background);
+}
+
+.key[data-active='true'] .key__keyboard-key,
+.key[data-active='true'] .key__keyboard-key::before {
+  border-color: var(--tangerine);
 }
 
 @media (min-width: 481px) and (max-width: 700px) {
@@ -210,8 +253,8 @@ body {
   --range-thumb-border-width: 0.1rem;
   --range-thumb-border: var(--range-thumb-border-width) solid var(--grey-300);
   --range-thumb-border-radius: 0.3rem;
-  --range-thumb-shadow: 0 0.1rem 0.3rem 0.1rem rgba(0, 0, 0, 0.2),
-    inset 0 0.2rem 0 rgba(255, 255, 255, 0.5);
+  --range-thumb-shadow: 0 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2), inset 0 0.1rem 0 rgba(255, 255, 255, 0.5);
+  --range-thumb-shadow-vertical: 0 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2), inset 0 0.2rem 0 rgba(255, 255, 255, 0.5);
   --range-thumb-height: 2.5rem;
   --range-thumb-width: 1.5rem;
   --range-thumb-background: var(--grey-500);
@@ -331,6 +374,12 @@ input[type='range']::-ms-thumb {
   cursor: pointer;
 }
 
+.range-container--vertical input[type='range']::-webkit-slider-thumb,
+.range-container--vertical input[type='range']::-moz-range-thumb,
+.range-container--vertical input[type='range']::-ms-thumb {
+  box-shadow: var(--range-thumb-shadow-vertical);
+}
+
 input[type='range']::-webkit-slider-runnable-track {
   width: 100%;
   height: 0.1rem;
@@ -362,6 +411,7 @@ input[type='range']::-ms-track {
 
 .analyser {
   width: 60rem;
+  max-width: 100%;
   height: 10rem;
 }
 
@@ -371,47 +421,32 @@ input[type='range']::-ms-track {
   padding: 0.8rem 0.4rem;
   gap: 1.5rem;
   align-items: center;
-  background: var(--grey-500);
-  border: 0.1rem solid var(--grey-600);
-  box-shadow: inset 0px 2px 0px rgba(255, 255, 255, 0.5);
-  border-radius: 0.6rem;
 }
 
 .toggle__label {
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   color: var(--white);
 }
 
-.toggle__indicator {
-  position: relative;
-  display: block;
-  background: var(--grey-200);
-  border-radius: 50%;
-  width: 0.4rem;
-  height: 0.4rem;
-}
-
-.toggle--active .toggle__indicator {
-  background-color: var(--tangerine);
-}
-
-.toggle--active .toggle__indicator::after {
-  content: '';
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0.4rem;
-  height: 0.4rem;
-  z-index: 0;
-  filter: blur(2px);
-  background-color: var(--tangerine);
-}
-
-.latch-group {
+.toggle__control {
+  width: 4rem;
+  height: 2rem;
   display: flex;
-  gap: 1rem;
   justify-content: center;
+  align-items: center;
+  color: var(--white);
+  background: var(--grey-500);
+  border: 1px solid var(--grey-600);
+  box-shadow: inset 0px 0.1rem 0 rgba(255, 255, 255, 0.5);
+  border-radius: 0.3rem;
+  flex: 1 1 auto;
+}
+
+.toggle--active .toggle__control {
+  background: var(--tangerine);
+  border: 0.1rem solid var(--grey-600);
+  box-shadow: inset 0 -0.2rem 0 rgba(255, 255, 255, 0.5);
+  border-radius: 0.3rem;
 }
 
 .toggle-group {
@@ -435,17 +470,18 @@ input[type='range']::-ms-track {
 .toggle-group__toggle svg {
   width: 2.8rem;
   height: 2.8rem;
+  display: block;
 }
 
 .toggle-group__toggle--active {
-  background: #ff8a00;
-  border: 1px solid var(--grey-600);
+  background: var(--tangerine);
+  border: 0.1rem solid var(--grey-600);
   box-shadow: inset 0 -0.2rem 0 rgba(255, 255, 255, 0.5);
   border-radius: 0.3rem;
 }
 
 .toggle-group__toggle-label {
-  font-size: 1.2rem;
+  font-size: 0.8rem;
   padding: 0.8rem 0.4rem;
 }
 
@@ -460,6 +496,27 @@ input[type='range']::-ms-track {
   height: 6rem;
   margin: 2rem 4rem;
   display: block;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 16rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 2rem;
+  line-height: 2.4rem;
+  font-weight: 400;
+}
+
+.header p {
+  margin: 0;
+  font-size: 1.2rem;
+  line-height: 1.4rem;
+  font-weight: 400;
 }
 
 .visually-hidden:not(:focus):not(:active) {

@@ -2,7 +2,7 @@ import React, {useEffect, useState, useRef} from 'react';
 
 import NOTES from '../data/NOTES';
 
-export const Midi = ({audioContext, onNotePlayed, onNoteStopped}) => {
+export const Midi = ({audioContext, onNotePlayed, onNoteStopped, hide}) => {
   const midiAccessRef = useRef(null);
   const [inputs, setInputs] = useState([]);
   const [selectedInput, setSelectedInput] = useState(null);
@@ -65,7 +65,7 @@ export const Midi = ({audioContext, onNotePlayed, onNoteStopped}) => {
   }, []);
 
   return (
-    midiAccessRef.current && (
+    midiAccessRef.current && !hide && (
       <div>
         <h2>MIDI Settings</h2>
         <label>DEVICE</label>

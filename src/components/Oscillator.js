@@ -80,6 +80,7 @@ export function Oscillator({title, osc, onChange}) {
           max="12"
           step="0.5"
           value={osc.detune}
+          highlightCentre
           onChange={(value) => handleChange('detune', value)}
         />
       </div>
