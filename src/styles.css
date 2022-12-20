@@ -32,6 +32,10 @@ body {
   font-size: 1.6rem;
 }
 
+a:focus {
+  outline-color: var(--tangerine);
+}
+
 .App {
   text-align: center;
 }
@@ -159,6 +163,11 @@ body {
   user-select: none;
 }
 
+.key:focus {
+  border-color: var(--tangerine);
+  outline: 0;
+}
+
 .key:first-of-type {
   border-radius: 0.8rem;
 }
@@ -254,18 +263,43 @@ body {
   --range-thumb-border: var(--range-thumb-border-width) solid var(--grey-300);
   --range-thumb-border-radius: 0.3rem;
   --range-thumb-shadow: 0 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2), inset 0 0.1rem 0 rgba(255, 255, 255, 0.5);
-  --range-thumb-shadow-vertical: 0 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2), inset 0 0.2rem 0 rgba(255, 255, 255, 0.5);
   --range-thumb-height: 2.5rem;
   --range-thumb-width: 1.5rem;
+  --range-thumb-offset: calc(-1 * (var(--range-thumb-height) / 2) + 0.8rem);
   --range-thumb-background: var(--grey-500);
-  --range-track-background: var(--white);
+  --range-track-background: transparent;
+  --range-track-size: 2rem;
+  --range-track-offset: 0.8rem;
 
   position: relative;
   margin-bottom: 1.6rem;
 }
 
+.range-container::before {
+  content: '';
+  width: calc(100% - 1.8rem);
+  height: 1px;
+  background: white;
+  display: block;
+  position: absolute;
+  top: calc(50% + 0.5rem);
+  left: 0.9rem;
+  z-index: 0;
+}
+
+.range-container--vertical::before {
+  height: calc(100% - 1.8rem);
+  width: 0.1rem;
+  top: 0.9rem;
+  left: calc(50%);
+}
+
 .range-container--vertical {
   overflow: hidden;
+  margin-bottom: 0;
+  --range-thumb-shadow: 0 0.1rem 0.1rem 0.1rem rgba(0, 0, 0, 0.2), inset -0.1rem 0 0 rgba(255, 255, 255, 0.5);
+  --range-thumb-offset: calc(-1 * (var(--range-thumb-height) / 2) + 0.8rem);
+  --range-track-offset: 0.3rem;
 }
 
 .range-container input[type='range'] {
@@ -326,7 +360,7 @@ input[type='range']::-webkit-slider-thumb {
 }
 
 input[type='range']:focus {
-  outline: none; /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+  outline: none;
 }
 
 input[type='range']::-ms-track {
@@ -349,7 +383,11 @@ input[type='range']::-webkit-slider-thumb {
   background: var(--range-thumb-background);
   box-shadow: var(--range-thumb-shadow);
   cursor: pointer;
-  margin-top: calc(-1 * (var(--range-thumb-height) / 2) + 0.1rem);
+  margin-top: var(--range-thumb-offset);
+}
+
+input[type='range']:focus::-webkit-slider-thumb {
+  border-color: var(--tangerine);
 }
 
 /* All the same stuff for Firefox */
@@ -374,17 +412,19 @@ input[type='range']::-ms-thumb {
   cursor: pointer;
 }
 
-.range-container--vertical input[type='range']::-webkit-slider-thumb,
-.range-container--vertical input[type='range']::-moz-range-thumb,
-.range-container--vertical input[type='range']::-ms-thumb {
+input[type='range'][orient='vertical']::-webkit-slider-thumb,
+input[type='range'][orient='vertical']::-moz-range-thumb,
+input[type='range'][orient='vertical']::-ms-thumb {
   box-shadow: var(--range-thumb-shadow-vertical);
 }
 
 input[type='range']::-webkit-slider-runnable-track {
   width: 100%;
-  height: 0.1rem;
+  height: var(--range-track-size);
   cursor: pointer;
   background: var(--range-track-background);
+  position: relative;
+  top: var(--range-track-offset);
 }
 
 input[type='range']:focus::-webkit-slider-runnable-track {
@@ -393,26 +433,39 @@ input[type='range']:focus::-webkit-slider-runnable-track {
 
 input[type='range']::-moz-range-track {
   width: 100%;
-  height: 0.2rem;
+  height: var(--range-track-size);
   cursor: pointer;
   background: var(--range-track-background);
+  position: relative;
+  top: var(--range-track-offset);
 }
 
 input[type='range']::-ms-track {
   width: 100%;
-  height: 0.1rem;
+  height: var(--range-track-size);
   cursor: pointer;
   background: var(--range-track-background);
   cursor: pointer;
   background: transparent;
   border-color: transparent;
   color: transparent;
+  position: relative;
+  top: var(--range-track-offset);
 }
 
 .analyser {
   width: 60rem;
   max-width: 100%;
   height: 10rem;
+  position: relative;
+}
+
+.analyser__canvas {
+  height: 100%;
+  width: calc(100% + 2.4rem);
+  position: absolute;
+  left: -1.2rem;
+  right: -1.2rem;
 }
 
 .toggle {
@@ -429,6 +482,7 @@ input[type='range']::-ms-track {
 }
 
 .toggle__control {
+  cursor: pointer;
   width: 4rem;
   height: 2rem;
   display: flex;
@@ -442,10 +496,15 @@ input[type='range']::-ms-track {
   flex: 1 1 auto;
 }
 
+.toggle__control:focus {
+  border-color: var(--tangerine);
+  outline: 0;
+}
+
 .toggle--active .toggle__control {
   background: var(--tangerine);
   border: 0.1rem solid var(--grey-600);
-  box-shadow: inset 0 -0.2rem 0 rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 -0.1rem 0 rgba(255, 255, 255, 0.5);
   border-radius: 0.3rem;
 }
 
@@ -455,6 +514,7 @@ input[type='range']::-ms-track {
 }
 
 .toggle-group__toggle {
+  cursor: pointer;
   padding: 0 0.4rem;
   display: flex;
   justify-content: center;
@@ -467,6 +527,11 @@ input[type='range']::-ms-track {
   flex: 1 1 auto;
 }
 
+.toggle-group__toggle:focus {
+  border-color: var(--tangerine);
+  outline: 0;
+}
+
 .toggle-group__toggle svg {
   width: 2.8rem;
   height: 2.8rem;
@@ -476,7 +541,7 @@ input[type='range']::-ms-track {
 .toggle-group__toggle--active {
   background: var(--tangerine);
   border: 0.1rem solid var(--grey-600);
-  box-shadow: inset 0 -0.2rem 0 rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 -0.1rem 0 rgba(255, 255, 255, 0.5);
   border-radius: 0.3rem;
 }
 

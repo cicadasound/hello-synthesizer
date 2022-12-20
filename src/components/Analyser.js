@@ -68,7 +68,9 @@ export function Analyser({audioContext, inputNode}) {
 
   return (
     <Module dark>
-      <canvas className="analyser" ref={canvasRef} />
+      <div className="analyser">
+        <canvas className="analyser__canvas" ref={canvasRef} />
+      </div>
     </Module>
   );
 }
