@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {RangeSlider} from './RangeSlider';
+import {Module} from './Module';
 
 export function Delay({title, delay, onChange}) {
   const handleChange = (key, value) => {
@@ -10,32 +11,29 @@ export function Delay({title, delay, onChange}) {
   };
 
   return (
-    <section className="controls-section">
-      <h2>{title}</h2>
-      <div className="controls-section__group">
-        <div className="control">
-          <label>TIME</label>
-          <RangeSlider
-            min="0"
-            max="1"
-            step="0.1"
-            value={delay.time}
-            onChange={(value) => handleChange('time', value)}
-            vertical
-          />
-        </div>
-        <div className="control">
-          <label>FDBK</label>
-          <RangeSlider
-            min="0"
-            max="1"
-            step="0.1"
-            value={delay.feedback}
-            onChange={(value) => handleChange('feedback', value)}
-            vertical
-          />
-        </div>
+    <Module title={title}>
+      <div className="control">
+        <label>TIME</label>
+        <RangeSlider
+          min="0"
+          max="1"
+          step="0.1"
+          value={delay.time}
+          onChange={(value) => handleChange('time', value)}
+          vertical
+        />
       </div>
-    </section>
+      <div className="control">
+        <label>FDBK</label>
+        <RangeSlider
+          min="0"
+          max="1"
+          step="0.1"
+          value={delay.feedback}
+          onChange={(value) => handleChange('feedback', value)}
+          vertical
+        />
+      </div>
+    </Module>
   );
 }

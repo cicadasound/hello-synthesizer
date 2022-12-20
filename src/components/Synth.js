@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 
 import {Analyser} from './Analyser';
 import {Oscillator} from './Oscillator';
@@ -10,8 +10,12 @@ import {Keyboard} from './Keyboard';
 import {Toggle} from './Toggle';
 import {Clock} from './Clock';
 import {LFO} from './LFO';
+import {Module} from './Module';
+import {CicadaIcon} from '../icons';
+import {Midi} from './Midi';
 
 import KEYS from '../data/KEYS';
+import NOTES from '../data/NOTES';
 
 const DEFAULTS = {
   lfo: {
@@ -53,7 +57,7 @@ const DEFAULTS = {
 };
 
 export const Synth = () => {
-  const audioContext = useRef(
+  const audioContextRef = useRef(
     new (window.AudioContext || window.webkitAudioContext)()
   );
   const voicesRef = useRef([]);
@@ -61,6 +65,7 @@ export const Synth = () => {
   const filterRef = useRef(null);
   const delayRef = useRef(null);
   const feedbackRef = useRef(null);
+  const envelopeRef = useRef(DEFAULTS.envelope);
   const lfoRef = useRef(null);
   const lfoGainRef = useRef(null);
 
@@ -85,35 +90,35 @@ export const Synth = () => {
 
   useEffect(() => {
     // Initialize main gain control
-    mainGainRef.current = audioContext.current.createGain();
+    mainGainRef.current = audioContextRef.current.createGain();
     mainGainRef.current.gain.value = DEFAULTS.amp.level;
 
     // Initialize filter
-    filterRef.current = audioContext.current.createBiquadFilter();
+    filterRef.current = audioContextRef.current.createBiquadFilter();
     filterRef.current.type = 'lowpass';
     filterRef.current.frequency.setValueAtTime(
       DEFAULTS.filter.frequency,
-      audioContext.current.currentTime
+      audioContextRef.current.currentTime
     );
     filterRef.current.Q.setValueAtTime(
       DEFAULTS.filter.q,
-      audioContext.current.currentTime
+      audioContextRef.current.currentTime
     );
 
     // Initialize delay
-    delayRef.current = audioContext.current.createDelay();
+    delayRef.current = audioContextRef.current.createDelay();
     delayRef.current.delayTime.value = DEFAULTS.delay.time;
-    feedbackRef.current = audioContext.current.createGain();
+    feedbackRef.current = audioContextRef.current.createGain();
     feedbackRef.current.gain.value = DEFAULTS.delay.feedback;
 
     // Initialize lfo
-    lfoRef.current = audioContext.current.createOscillator();
+    lfoRef.current = audioContextRef.current.createOscillator();
     lfoRef.current.frequency.setValueAtTime(
       DEFAULTS.lfo.frequency,
-      audioContext.current.currentTime
+      audioContextRef.current.currentTime
     );
     lfoRef.current.type = DEFAULTS.lfo.type;
-    lfoGainRef.current = audioContext.current.createGain();
+    lfoGainRef.current = audioContextRef.current.createGain();
     lfoGainRef.current.gain.value = DEFAULTS.lfo.level;
     lfoRef.current.connect(lfoGainRef.current);
     lfoGainRef.current.connect(filterRef.current.frequency);
@@ -125,7 +130,7 @@ export const Synth = () => {
     filterRef.current.connect(delayRef.current);
     filterRef.current.connect(mainGainRef.current);
     delayRef.current.connect(mainGainRef.current);
-    mainGainRef.current.connect(audioContext.current.destination);
+    mainGainRef.current.connect(audioContextRef.current.destination);
   }, []);
 
   useEffect(() => {
@@ -150,6 +155,74 @@ export const Synth = () => {
     return () => {};
   }, [pressedKeys, currentNote, arp]);
 
+  const createOscillator = (note) => {
+    console.log('Creating osc for ...', note);
+    const frequency = note.frequency;
+    if (!frequency) {
+      return;
+    }
+    if (voicesRef.current[note.name]) {
+      destroyOscillator(note);
+    }
+    const oscillator1 = audioContextRef.current.createOscillator();
+    oscillator1.type = osc1.type;
+    oscillator1.detune.setValueAtTime(
+      osc1.detune,
+      audioContextRef.current.currentTime
+    );
+    oscillator1.frequency.value = frequency * osc1.octave;
+    if (lfo.destination === 'osc1') {
+      lfoGainRef.current.connect(oscillator1.detune);
+    }
+    oscillator1.start();
+    const oscillator2 = audioContextRef.current.createOscillator();
+    oscillator2.type = osc2.type;
+    oscillator2.detune.setValueAtTime(
+      osc2.detune,
+      audioContextRef.current.currentTime
+    );
+    oscillator2.frequency.value = frequency * osc2.octave;
+    if (lfo.destination === 'osc2') {
+      lfoGainRef.current.connect(oscillator2.detune);
+    }
+    oscillator2.start();
+    console.log('Osc created...', osc1, osc2);
+    console.log('Envelope...', envelope);
+    const vca = audioContextRef.current.createGain();
+    vca.gain.value = 0;
+    vca.gain.setValueAtTime(0, audioContextRef.current.currentTime);
+    vca.gain.linearRampToValueAtTime(
+      0.1,
+      audioContextRef.current.currentTime + envelopeRef.current.attack
+    );
+    vca.gain.linearRampToValueAtTime(
+      envelope.sustain,
+      audioContextRef.current.currentTime +
+        envelopeRef.current.attack +
+        envelopeRef.current.decay
+    );
+
+    console.log('VCA created ...', vca);
+    oscillator1.connect(vca);
+    oscillator2.connect(vca);
+    vca.connect(filterRef.current);
+    voicesRef.current[note.name] = {vca};
+  };
+
+  const destroyOscillator = (note) => {
+    console.log('destroy', note);
+    console.log('currentVoices', voicesRef.current);
+    if (!voicesRef.current[note.name]) {
+      return;
+    }
+    const {vca} = voicesRef.current[note.name];
+    vca.gain.cancelAndHoldAtTime(audioContextRef.current.currentTime);
+    vca.gain.linearRampToValueAtTime(
+      0,
+      audioContextRef.current.currentTime + envelopeRef.current.release
+    );
+  };
+
   const handleLatchChange = () => {
     const newLatch = !latch;
 
@@ -165,10 +238,16 @@ export const Synth = () => {
     const newArpValue = !arp;
     if (newArpValue) {
       setCurrentNote(0);
-      pressedKeys.forEach((key) => destroyOscillator(key));
+      pressedKeys.forEach((key) => {
+        const note = NOTES.find((n) => n.name === KEYS[key].note);
+        destroyOscillator(note);
+      });
     } else {
       if (latch) {
-        pressedKeys.forEach((key) => createOscillator(key));
+        pressedKeys.forEach((key) => {
+          const note = NOTES.find((n) => n.name === KEYS[key].note);
+          createOscillator(note);
+        });
       }
       setCurrentNote(null);
     }
@@ -192,7 +271,7 @@ export const Synth = () => {
     if (lfoRef.current.frequency !== newLFO.frequency) {
       lfoRef.current.frequency.setValueAtTime(
         newLFO.frequency,
-        audioContext.current.currentTime
+        audioContextRef.current.currentTime
       );
     }
     setLFO(newLFO);
@@ -221,19 +300,20 @@ export const Synth = () => {
     if (newFilter.frequency !== filter.frequency) {
       filterRef.current.frequency.setValueAtTime(
         newFilter.frequency,
-        audioContext.current.currentTime
+        audioContextRef.current.currentTime
       );
     }
     if (newFilter.q !== filter.q) {
       filterRef.current.Q.setValueAtTime(
         newFilter.q,
-        audioContext.current.currentTime
+        audioContextRef.current.currentTime
       );
     }
     setFilter(newFilter);
   };
 
   const handleEnvelopeChange = (newEnvelope) => {
+    envelopeRef.current = newEnvelope;
     setEnvelope(newEnvelope);
   };
 
@@ -245,62 +325,6 @@ export const Synth = () => {
       feedbackRef.current.gain.value = newDelay.feedback;
     }
     setDelay(newDelay);
-  };
-
-  const createOscillator = (key) => {
-    const frequency = KEYS[key].frequency;
-    if (!frequency) {
-      return;
-    }
-    const oscillator1 = audioContext.current.createOscillator();
-    oscillator1.type = osc1.type;
-    oscillator1.detune.setValueAtTime(
-      osc1.detune,
-      audioContext.current.currentTime
-    );
-    oscillator1.frequency.value = frequency * osc1.octave;
-    if (lfo.destination === 'osc1') {
-      lfoGainRef.current.connect(oscillator1.detune);
-    }
-    oscillator1.start();
-    const oscillator2 = audioContext.current.createOscillator();
-    oscillator2.type = osc2.type;
-    oscillator2.detune.setValueAtTime(
-      osc2.detune,
-      audioContext.current.currentTime
-    );
-    oscillator2.frequency.value = frequency * osc2.octave;
-    if (lfo.destination === 'osc2') {
-      lfoGainRef.current.connect(oscillator2.detune);
-    }
-    oscillator2.start();
-    const vca = audioContext.current.createGain();
-    vca.gain.value = 0;
-    vca.gain.setValueAtTime(0, audioContext.current.currentTime);
-    vca.gain.linearRampToValueAtTime(
-      0.1,
-      audioContext.current.currentTime + envelope.attack
-    );
-    vca.gain.linearRampToValueAtTime(
-      envelope.sustain,
-      audioContext.current.currentTime + envelope.attack + envelope.decay
-    );
-    oscillator1.connect(vca);
-    oscillator2.connect(vca);
-    vca.connect(filterRef.current);
-    voicesRef.current[key] = {vca};
-  };
-
-  const destroyOscillator = (key) => {
-    if (!voicesRef.current[key]) {
-      return;
-    }
-    const {vca} = voicesRef.current[key];
-    vca.gain.cancelAndHoldAtTime(audioContext.current.currentTime);
-    vca.gain.linearRampToValueAtTime(
-      0,
-      audioContext.current.currentTime + envelope.release
-    );
   };
 
   const playNote = (key) => {
@@ -318,60 +342,52 @@ export const Synth = () => {
       return;
     }
 
-    createOscillator(key);
+    const note = NOTES.find((n) => n.name === KEYS[key].note);
+    createOscillator(note);
   };
 
   const stopNote = (key, force) => {
     if (latch && !force) {
       return;
     }
-    destroyOscillator(key);
+    const note = NOTES.find((n) => n.name === KEYS[key].note);
+    destroyOscillator(note);
     const filteredKeys = [...pressedKeys].filter((k) => k !== key);
     setPressedKeys(filteredKeys);
   };
 
   const handleKeyDown = (event) => {
-    if (!KEYS[event.key]) {
-      return;
-    }
     const key = event.key;
-    playNote(key);
+    if (KEYS[key]) {
+      playNote(key);
+    }
   };
 
   const handleKeyUp = (event) => {
     const key = event.key;
-    if (!voicesRef.current[key]) {
-      return;
+    if (KEYS[key]) {
+      stopNote(key);
     }
-
-    stopNote(key);
   };
 
   const handleKeyTouchStart = (event) => {
     const key = event.target.getAttribute('data-key');
-    if (!KEYS[key]) {
-      return;
-    }
-
     playNote(key);
   };
 
   const handleKeyTouchEnd = (event) => {
     const key = event.target.getAttribute('data-key');
-    if (!voicesRef.current[key]) {
-      return;
-    }
-
     stopNote(key);
   };
 
   const playArpNote = (key) => {
-    createOscillator(key);
-    const {vca} = voicesRef.current[key];
-    vca.gain.cancelAndHoldAtTime(audioContext.current.currentTime + 1);
+    const note = NOTES.find((n) => n.name === KEYS[key].note);
+    createOscillator(note);
+    const {vca} = voicesRef.current[note.name];
+    vca.gain.cancelAndHoldAtTime(audioContextRef.current.currentTime + 1);
     vca.gain.linearRampToValueAtTime(
       0,
-      audioContext.current.currentTime + envelope.release + 1
+      audioContextRef.current.currentTime + envelope.release + 1
     );
   };
 
@@ -384,14 +400,24 @@ export const Synth = () => {
       tabIndex={0}
     >
       <div className="synth__controls">
-        <section className="controls-section">
-          <div className="latch-group">
-            <Toggle label="LATCH" onChange={handleLatchChange} active={latch} />
-            <Toggle label="ARP" onChange={handleArpChange} active={arp} />
+        <Module dark>
+          <div>
+            <div>👋</div>
+            <h1>Hello Synth</h1>
+            <p>v0.1</p>
           </div>
-        </section>
-        <Clock title="CLK" clock={clock} onChange={handleClockChange} />
-        <LFO title="LFO" lfo={lfo} onChange={handleLFOChange} />
+        </Module>
+        <Analyser
+          audioContext={audioContextRef.current}
+          inputNode={mainGainRef.current}
+        />
+        <Module dark>
+          <div>
+            <CicadaIcon className="logo" />
+          </div>
+        </Module>
+      </div>
+      <div className="synth__controls">
         <Oscillator title="OSC1" osc={osc1} onChange={handleOsc1Change} />
         <Oscillator title="OSC2" osc={osc2} onChange={handleOsc2Change} />
         <Amp title="AMP" amp={amp} onChange={handleAmpChange} />
@@ -403,15 +429,28 @@ export const Synth = () => {
         />
         <Delay title="DELAY" delay={delay} onChange={handleDelayChange} />
       </div>
+      <div className="synth__controls">
+        <Module title="CONTROL">
+          <section className="latch-group">
+            <Toggle label="LATCH" onChange={handleLatchChange} active={latch} />
+            <Toggle label="ARP" onChange={handleArpChange} active={arp} />
+          </section>
+          <Clock title="CLK" clock={clock} onChange={handleClockChange} />
+        </Module>
+        <LFO title="LFO" lfo={lfo} onChange={handleLFOChange} />
+      </div>
       <Keyboard
         pressedKeys={pressedKeys}
         onKeyTouchStart={handleKeyTouchStart}
         onKeyTouchEnd={handleKeyTouchEnd}
       />
-      <Analyser
-        audioContext={audioContext.current}
-        inputNode={mainGainRef.current}
-      />
+      <div id="settings" className="panel">
+        <Midi
+          audioContext={audioContextRef.current}
+          onNotePlayed={createOscillator}
+          onNoteStopped={destroyOscillator}
+        />
+      </div>
     </div>
   );
 };

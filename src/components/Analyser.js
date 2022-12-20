@@ -1,5 +1,7 @@
 import React, {useRef, useEffect} from 'react';
 
+import {Module} from './Module';
+
 export function Analyser({audioContext, inputNode}) {
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
@@ -34,10 +36,10 @@ export function Analyser({audioContext, inputNode}) {
 
     const draw = function () {
       analyserRef.current.getByteTimeDomainData(dataArray);
-      canvasCtx.fillStyle = 'rgb(217, 229, 214)';
+      canvasCtx.fillStyle = '#222222';
       canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
-      canvasCtx.lineWidth = 2;
-      canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+      canvasCtx.lineWidth = 1;
+      canvasCtx.strokeStyle = '#46C278';
       canvasCtx.beginPath();
 
       const sliceWidth = (WIDTH * 1.0) / bufferLength;
@@ -65,6 +67,8 @@ export function Analyser({audioContext, inputNode}) {
   }
 
   return (
-    <canvas className="analyser" ref={canvasRef} width="200" height="200" />
+    <Module dark>
+      <canvas className="analyser" ref={canvasRef} />
+    </Module>
   );
 }
