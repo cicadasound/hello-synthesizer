@@ -1,8 +1,10 @@
 import React, {useEffect, useState, useRef} from 'react';
 
+import {Module} from './Module';
+
 import NOTES from '../data/NOTES';
 
-export const Midi = ({audioContext, onNotePlayed, onNoteStopped, hide}) => {
+export const Midi = ({audioContext, onNotePlayed, onNoteStopped, hidden}) => {
   const midiAccessRef = useRef(null);
   const [inputs, setInputs] = useState([]);
   const [selectedInput, setSelectedInput] = useState(null);
@@ -65,9 +67,8 @@ export const Midi = ({audioContext, onNotePlayed, onNoteStopped, hide}) => {
   }, []);
 
   return (
-    midiAccessRef.current && !hide && (
-      <div>
-        <h2>MIDI Settings</h2>
+    midiAccessRef.current && !hidden && (
+      <Module title="MIDI SETTINGS">
         <label>DEVICE</label>
         <select
           value={selectedInput?.id || 'all'}
@@ -84,7 +85,7 @@ export const Midi = ({audioContext, onNotePlayed, onNoteStopped, hide}) => {
             );
           })}
         </select>
-      </div>
+      </Module>
     )
   );
 };
