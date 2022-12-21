@@ -163,6 +163,7 @@ a:focus {
   justify-content: flex-end;
   margin-left: -0.2rem;
   user-select: none;
+  transition: border-color 200ms ease-out;
 }
 
 .key:first-of-type {
@@ -210,6 +211,7 @@ a:focus {
   left: -0.1rem;
   z-index: -1;
   pointer-events: none;
+  transition: all 140ms ease-out;
 }
 
 .key__keyboard-key {
@@ -225,6 +227,7 @@ a:focus {
   margin-top: 2rem;
   margin-bottom: 1.6rem;
   pointer-events: none;
+  transition: all 140ms ease-out;
 }
 
 .key__keyboard-key-cap {
@@ -264,7 +267,7 @@ a:focus {
 
 @media (min-width: 481px) and (max-width: 700px) {
   .keyboard {
-    transform: scale(0.7);
+    transform: scale(0.6);
   }
 }
 
@@ -521,6 +524,7 @@ input[type='range']::-ms-track {
   box-shadow: inset 0px 0.1rem 0 rgba(255, 255, 255, 0.5);
   border-radius: 0.3rem;
   flex: 1 1 auto;
+  transition: background-color 160ms ease-out;
 }
 
 .toggle__control:focus {
@@ -529,7 +533,7 @@ input[type='range']::-ms-track {
 }
 
 .toggle--active .toggle__control {
-  background: var(--tangerine);
+  background-color: var(--tangerine);
   border: 0.1rem solid var(--grey-600);
   box-shadow: inset 0 -0.1rem 0 rgba(255, 255, 255, 0.5);
   border-radius: 0.3rem;
@@ -547,11 +551,12 @@ input[type='range']::-ms-track {
   justify-content: center;
   align-items: center;
   color: var(--white);
-  background: var(--grey-500);
+  background-color: var(--grey-500);
   border: 1px solid var(--grey-600);
   box-shadow: inset 0px 0.1rem 0 rgba(255, 255, 255, 0.5);
   border-radius: 0.3rem;
   flex: 1 1 auto;
+  transition: all 200ms ease-out;
 }
 
 .toggle-group__toggle:focus {
