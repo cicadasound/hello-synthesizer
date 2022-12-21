@@ -38,11 +38,11 @@ export function Oscillator({title, osc, onChange}) {
 
   const octaveOptions = [
     {
-      label: '2',
+      label: '32',
       value: 0.5,
     },
     {
-      label: '4',
+      label: '16',
       value: 1,
     },
     {
@@ -50,11 +50,11 @@ export function Oscillator({title, osc, onChange}) {
       value: 2,
     },
     {
-      label: '16',
+      label: '4',
       value: 3,
     },
     {
-      label: '32',
+      label: '2',
       value: 4,
     },
   ];
