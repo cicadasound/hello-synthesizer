@@ -38,6 +38,10 @@ export function Oscillator({title, osc, onChange}) {
 
   const octaveOptions = [
     {
+      label: '2',
+      value: 0.5,
+    },
+    {
       label: '4',
       value: 1,
     },
