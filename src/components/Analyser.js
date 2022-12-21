@@ -1,13 +1,14 @@
 import React, {useRef, useEffect} from 'react';
+import classnames from 'classnames';
 
 import {Module} from './Module';
 
-export function Analyser({audioContext, inputNode}) {
+export function Analyser({audioContext, inputNode, poweredOn}) {
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
 
   useEffect(() => {
-    if (!audioContext || !inputNode) {
+    if (!poweredOn || !audioContext || !inputNode) {
       return;
     }
 
@@ -17,11 +18,10 @@ export function Analyser({audioContext, inputNode}) {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
 
-    //Our draw come here
     visualize(context);
-  }, [audioContext, inputNode]);
+  }, [audioContext, inputNode, poweredOn]);
 
-  function visualize(canvasCtx) {
+  const visualize = (canvasCtx) => {
     const WIDTH = canvasRef.current.width;
     const HEIGHT = canvasRef.current.height;
 
@@ -34,12 +34,12 @@ export function Analyser({audioContext, inputNode}) {
 
     canvasCtx.clearRect(0, 0, WIDTH, HEIGHT);
 
-    const draw = function () {
+    const draw = () => {
       analyserRef.current.getByteTimeDomainData(dataArray);
       canvasCtx.fillStyle = '#222222';
       canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
       canvasCtx.lineWidth = 1;
-      canvasCtx.strokeStyle = '#46C278';
+      canvasCtx.strokeStyle = '#08fd75';
       canvasCtx.beginPath();
 
       const sliceWidth = (WIDTH * 1.0) / bufferLength;
@@ -60,16 +60,21 @@ export function Analyser({audioContext, inputNode}) {
 
       canvasCtx.lineTo(canvasRef.current.width, canvasRef.current.height / 2);
       canvasCtx.stroke();
+
       requestAnimationFrame(draw);
     };
 
     draw();
-  }
+  };
+
+  const canvasClassName = classnames('analyser__canvas', {
+    'analyser__canvas--visible': poweredOn,
+  });
 
   return (
     <Module dark>
       <div className="analyser">
-        <canvas className="analyser__canvas" ref={canvasRef} />
+        <canvas className={canvasClassName} ref={canvasRef} />
       </div>
     </Module>
   );

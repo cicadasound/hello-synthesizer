@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
+import classnames from 'classnames';
 
 import {Analyser} from './Analyser';
 import {Oscillator} from './Oscillator';
@@ -10,7 +11,7 @@ import {Keyboard} from './Keyboard';
 import {Control} from './Control';
 import {LFO} from './LFO';
 import {Module} from './Module';
-import {CicadaIcon} from '../icons';
+import {CicadaIcon, LogoIcon} from '../icons';
 import {Midi} from './Midi';
 
 import KEYS from '../data/KEYS';
@@ -58,9 +59,7 @@ const DEFAULTS = {
 };
 
 export const Synth = () => {
-  const audioContextRef = useRef(
-    new (window.AudioContext || window.webkitAudioContext)()
-  );
+  const audioContextRef = useRef(null);
   const voicesRef = useRef([]);
   const mainGainRef = useRef(null);
   const filterRef = useRef(null);
@@ -71,6 +70,7 @@ export const Synth = () => {
   const lfoGainRef = useRef(null);
   const arpClockRef = useRef(null);
 
+  const [poweredOn, setPoweredOn] = useState(false);
   const [currentNote, setCurrentNote] = useState(null);
   const [pressedKeys, setPressedKeys] = useState([]);
   const [osc1, setOsc1] = useState(DEFAULTS.osc1);
@@ -86,9 +86,82 @@ export const Synth = () => {
   React.useEffect(() => {
     const synth = document.getElementById('synth');
     synth.focus();
+    setTimeout(() => powerOn(), 500);
   }, []);
+  
+  const loadPreset = () => {
+    const savedSettings = localStorage.getItem('HelloSynthPreset');
+    
+    if (!savedSettings) {
+      return;
+    }
+    
+    const preset = JSON.parse(savedSettings);
+    console.log(preset);
+    
+    const {
+      lfo,
+      osc1,
+      osc2,
+      amp,
+      filter,
+      delay,
+      control,
+      envelope,
+    } = preset;
+
+    handleLFOChange(lfo);
+    handleOsc1Change(osc1);
+    handleOsc2Change(osc2);
+    handleAmpChange(amp);
+    handleFilterChange(filter);
+    handleDelayChange(delay);
+    handleControlChange(control);
+    handleEnvelopeChange(envelope);
+  };
+  
+  const savePreset = () => {
+    const presetSettings = {
+      lfo,
+      osc1,
+      osc2,
+      amp,
+      filter,
+      delay,
+      control,
+      envelope,
+    };
+    
+    localStorage.setItem('HelloSynthPreset', JSON.stringify(presetSettings));
+  };
 
   useEffect(() => {
+    if (control.arp && pressedKeys.length > 0) {
+      const secondsPerBeat = 60.0 / control.tempo;
+      const note = currentNote ? pressedKeys[currentNote] : pressedKeys[0];
+      if (note) {
+        playArpNote(note);
+      }
+      arpClockRef.current = setTimeout(() => {
+        const nextNote = currentNote + 1;
+        if (nextNote === pressedKeys.length) {
+          setCurrentNote(0);
+        } else {
+          setCurrentNote(nextNote);
+        }
+      }, secondsPerBeat * 1000);
+
+      return () => clearTimeout(arpClockRef.current);
+    }
+
+    return () => {};
+  }, [pressedKeys, currentNote, control.arp]);
+
+  const setupAudioContext = () => {
+    // Initialize audio context
+    audioContextRef.current = new (window.AudioContext ||
+      window.webkitAudioContext)();
+
     // Initialize main gain control
     mainGainRef.current = audioContextRef.current.createGain();
     mainGainRef.current.gain.value = DEFAULTS.amp.level;
@@ -131,31 +204,24 @@ export const Synth = () => {
     filterRef.current.connect(mainGainRef.current);
     delayRef.current.connect(mainGainRef.current);
     mainGainRef.current.connect(audioContextRef.current.destination);
-  }, []);
+  };
 
-  useEffect(() => {
-    if (control.arp && pressedKeys.length > 0) {
-      const secondsPerBeat = 60.0 / control.tempo;
-      const note = currentNote ? pressedKeys[currentNote] : pressedKeys[0];
-      if (note) {
-        playArpNote(note);
-      }
-      arpClockRef.current = setTimeout(() => {
-        const nextNote = currentNote + 1;
-        if (nextNote === pressedKeys.length) {
-          setCurrentNote(0);
-        } else {
-          setCurrentNote(nextNote);
-        }
-      }, secondsPerBeat * 1000);
-
-      return () => clearTimeout(arpClockRef.current);
-    }
-
-    return () => {};
-  }, [pressedKeys, currentNote, control.arp]);
+  const destroyAudioContext = () => {
+    audioContextRef.current = null;
+    voicesRef.current = [];
+    mainGainRef.current = null;
+    filterRef.current = null;
+    delayRef.current = null;
+    feedbackRef.current = null;
+    lfoRef.current = null;
+    lfoGainRef.current = null;
+    arpClockRef.current = null;
+  };
 
   const createOscillator = (note) => {
+    if (!poweredOn) {
+      return;
+    }
     const frequency = note.frequency;
     if (!frequency) {
       return;
@@ -247,6 +313,29 @@ export const Synth = () => {
 
   const handleOsc2Change = (newOsc) => {
     setOsc2(newOsc);
+  };
+  
+  const powerOff = () => {
+    pressedKeys.forEach((note) => {
+      destroyOscillator(note);
+    });
+    setPressedKeys([]);
+    destroyAudioContext();
+    setPoweredOn(false);
+  };
+  
+  const powerOn = () => {
+    setPoweredOn(true);
+    setupAudioContext();
+    loadPreset();
+  }
+
+  const handlePowerChange = () => {
+    if (poweredOn) {
+      powerOff();
+    } else {
+      powerOn();
+    }
   };
 
   const handleControlChange = (newControl) => {
@@ -340,7 +429,6 @@ export const Synth = () => {
 
   const handleKeyDown = (event) => {
     const key = event.key;
-    console.log(event);
     if (key === 'Escape') {
       pressedKeys.forEach((note) => {
         stopNote(note, true);
@@ -348,8 +436,11 @@ export const Synth = () => {
       setPressedKeys([]);
       return;
     } else if (key === 'M' && event.shiftKey) {
-      console.log('midi', event);
       setMidiSettingsVisible(!midiSettingsVisible);
+      return;
+    } else if (key === 's' && event.metaKey) {
+      event.preventDefault();
+      savePreset();
       return;
     }
 
@@ -358,7 +449,7 @@ export const Synth = () => {
     }
 
     const note = NOTES.find((n) => n.name === KEYS[key].note);
-    if (note) {
+    if (note && poweredOn) {
       playNote(note);
     }
   };
@@ -404,10 +495,12 @@ export const Synth = () => {
     );
   };
 
+  const synthClassNames = classnames('synth', {'synth--disabled': !poweredOn});
+
   return (
     <div
       id="synth"
-      className="synth"
+      className={synthClassNames}
       onKeyUp={handleKeyUp}
       onKeyDown={handleKeyDown}
       tabIndex={0}
@@ -415,20 +508,30 @@ export const Synth = () => {
       <div className="synth__controls">
         <Module dark>
           <div className="header">
-            <div>👋</div>
-            <h1>Hello Synth</h1>
-            <p>v0.1</p>
+            <h1 className="visually-hidden">Hello Synth</h1>
+            <LogoIcon className="logo" />
           </div>
         </Module>
         <Analyser
           audioContext={audioContextRef.current}
           inputNode={mainGainRef.current}
+          poweredOn={poweredOn}
         />
         <Module dark>
           <a href="https://cicadasound.ca">
-            <CicadaIcon className="logo" />
+            <CicadaIcon className="cicada" />
           </a>
         </Module>
+      </div>
+      <div className="synth__controls">
+        <Control
+          control={control}
+          title="CONTROL"
+          onChange={handleControlChange}
+          poweredOn={poweredOn}
+          onPowerChange={handlePowerChange}
+        />
+        <LFO title="LFO" lfo={lfo} onChange={handleLFOChange} />
       </div>
       <div className="synth__controls">
         <Oscillator title="OSC1" osc={osc1} onChange={handleOsc1Change} />
@@ -442,19 +545,12 @@ export const Synth = () => {
         />
         <Delay title="DELAY" delay={delay} onChange={handleDelayChange} />
       </div>
-      <div className="synth__controls">
-        <Control
-          control={control}
-          title="CONTROL"
-          onChange={handleControlChange}
-        />
-        <LFO title="LFO" lfo={lfo} onChange={handleLFOChange} />
-      </div>
       <Keyboard
         pressedKeys={pressedKeys}
         onKeyTouchStart={handleKeyTouchStart}
         onKeyTouchEnd={handleKeyTouchEnd}
         currentNote={currentNote}
+        poweredOn={poweredOn}
       />
       <div id="settings" className="panel">
         <Midi
