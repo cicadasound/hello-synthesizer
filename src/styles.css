@@ -163,7 +163,7 @@ a:focus {
   justify-content: flex-end;
   margin-left: -0.2rem;
   user-select: none;
-  transition: border-color 200ms ease-out;
+  transition: all 200ms ease-out;
 }
 
 .key:first-of-type {
@@ -253,7 +253,6 @@ a:focus {
 .key--current {
   color: var(--white);
   background-color: var(--tangerine);
-  border-color: var(--white);
 }
 
 .key--current .key__keyboard-key,
