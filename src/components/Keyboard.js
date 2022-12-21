@@ -8,6 +8,7 @@ export function Keyboard({
   currentNote,
   onKeyTouchStart,
   onKeyTouchEnd,
+  poweredOn,
 }) {
   const keys = Object.entries(KEYS);
   const keyboardMarkup = keys.map(([keyboardKey, key]) => {
@@ -21,6 +22,7 @@ export function Keyboard({
       'key--current': keyCurrent,
       'key--active': keyActive,
     });
+    
     return (
       <button
         className={keyClasses}
@@ -32,6 +34,7 @@ export function Keyboard({
         onTouchStart={onKeyTouchStart}
         onTouchEnd={onKeyTouchEnd}
         tabIndex="-1"
+        disabled={!poweredOn}
       >
         <div className="key__note">{key.note}</div>
         <div className="key__keyboard-key">
