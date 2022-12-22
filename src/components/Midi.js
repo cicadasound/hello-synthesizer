@@ -39,11 +39,9 @@ export const Midi = ({audioContext, onNotePlayed, onNoteStopped, hidden}) => {
 
     switch (command) {
       case 144: // noteOn
-        console.log('Note on', note);
         onNotePlayed(note, true);
         break;
       case 128: // noteOff
-        console.log('Note off', note);
         onNoteStopped(note);
         break;
     }

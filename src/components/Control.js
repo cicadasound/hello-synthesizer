@@ -15,7 +15,13 @@ export function Control({control, title, onChange, poweredOn, onPowerChange}) {
 
   return (
     <Module title={title}>
-      <Toggle label="POWER" onChange={onPowerChange} active={poweredOn} primary icon={<PowerIcon />} />
+      <Toggle
+        label="POWER"
+        onChange={onPowerChange}
+        active={poweredOn}
+        primary
+        icon={<PowerIcon />}
+      />
       <div className="control">
         <label>SPEED</label>
         <RangeSlider

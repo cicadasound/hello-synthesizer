@@ -2,6 +2,7 @@ import React, {useEffect, useState, useRef} from 'react';
 import classnames from 'classnames';
 
 import {Analyser} from './Analyser';
+import {AudioSettings} from './AudioSettings';
 import {Oscillator} from './Oscillator';
 import {Amp} from './Amp';
 import {Filter} from './Filter';
@@ -13,9 +14,20 @@ import {LFO} from './LFO';
 import {Module} from './Module';
 import {CicadaIcon, LogoIcon} from '../icons';
 import {Midi} from './Midi';
+import {Presets} from './Presets';
 
 import KEYS from '../data/KEYS';
 import NOTES from '../data/NOTES';
+
+function downloadObjectAsJson(exportObj, exportName) {
+  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+  var downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute("href",     dataStr);
+  downloadAnchorNode.setAttribute("download", exportName + ".json");
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+}
 
 const DEFAULTS = {
   lfo: {
@@ -60,6 +72,8 @@ const DEFAULTS = {
 
 export const Synth = () => {
   const audioContextRef = useRef(null);
+  const audioRef = useRef(null);
+  const destinationRef = useRef(null);
   const voicesRef = useRef([]);
   const mainGainRef = useRef(null);
   const filterRef = useRef(null);
@@ -81,35 +95,27 @@ export const Synth = () => {
   const [envelope, setEnvelope] = useState(DEFAULTS.envelope);
   const [delay, setDelay] = useState(DEFAULTS.delay);
   const [control, setControl] = useState(DEFAULTS.control);
-  const [midiSettingsVisible, setMidiSettingsVisible] = useState(false);
+  const [settingsVisible, setSettingsVisible] = useState(true);
 
   React.useEffect(() => {
     const synth = document.getElementById('synth');
     synth.focus();
-    setTimeout(() => powerOn(), 500);
+    setTimeout(() => powerOn(), 300);
   }, []);
   
-  const loadPreset = () => {
+  const loadDefaultPreset = () => {
     const savedSettings = localStorage.getItem('HelloSynthPreset');
-    
+
     if (!savedSettings) {
       return;
     }
-    
-    const preset = JSON.parse(savedSettings);
-    console.log(preset);
-    
-    const {
-      lfo,
-      osc1,
-      osc2,
-      amp,
-      filter,
-      delay,
-      control,
-      envelope,
-    } = preset;
 
+    const preset = JSON.parse(savedSettings);
+    
+    handlePresetChange(preset);
+  };
+
+  const handlePresetChange = ({lfo, osc1, osc2, amp, filter, delay, control, envelope}) => {
     handleLFOChange(lfo);
     handleOsc1Change(osc1);
     handleOsc2Change(osc2);
@@ -119,7 +125,7 @@ export const Synth = () => {
     handleControlChange(control);
     handleEnvelopeChange(envelope);
   };
-  
+
   const savePreset = () => {
     const presetSettings = {
       lfo,
@@ -131,8 +137,26 @@ export const Synth = () => {
       control,
       envelope,
     };
-    
+
     localStorage.setItem('HelloSynthPreset', JSON.stringify(presetSettings));
+  };
+  
+  const downloadPreset = () => {
+    const presetSettings = {
+      lfo,
+      osc1,
+      osc2,
+      amp,
+      filter,
+      delay,
+      control,
+      envelope,
+    };
+    downloadObjectAsJson(presetSettings, 'hello-synth');
+  }
+  
+  const uploadPreset = () => {
+    
   };
 
   useEffect(() => {
@@ -216,6 +240,16 @@ export const Synth = () => {
     lfoRef.current = null;
     lfoGainRef.current = null;
     arpClockRef.current = null;
+  };
+
+  const handleDestinationDeviceChange = (newAudioDevice) => {
+    destinationRef.current = audioContextRef.current.createMediaStreamDestination();
+    mainGainRef.current.disconnect();
+    mainGainRef.current.connect(destinationRef.current);
+    audioRef.current = new Audio();
+    audioRef.current.srcObject = destinationRef.current.stream;
+    audioRef.current.play();
+    audioRef.current.setSinkId(newAudioDevice.id)
   };
 
   const createOscillator = (note) => {
@@ -314,7 +348,7 @@ export const Synth = () => {
   const handleOsc2Change = (newOsc) => {
     setOsc2(newOsc);
   };
-  
+
   const powerOff = () => {
     pressedKeys.forEach((note) => {
       destroyOscillator(note);
@@ -323,12 +357,12 @@ export const Synth = () => {
     destroyAudioContext();
     setPoweredOn(false);
   };
-  
+
   const powerOn = () => {
     setPoweredOn(true);
     setupAudioContext();
-    loadPreset();
-  }
+    loadDefaultPreset();
+  };
 
   const handlePowerChange = () => {
     if (poweredOn) {
@@ -436,11 +470,12 @@ export const Synth = () => {
       setPressedKeys([]);
       return;
     } else if (key === 'M' && event.shiftKey) {
-      setMidiSettingsVisible(!midiSettingsVisible);
+      setSettingsVisible(!settingsVisible);
       return;
     } else if (key === 's' && event.metaKey) {
       event.preventDefault();
-      savePreset();
+      // savePreset();
+      downloadPreset();
       return;
     }
 
@@ -553,11 +588,20 @@ export const Synth = () => {
         poweredOn={poweredOn}
       />
       <div id="settings" className="panel">
+        <Presets
+          hidden={!settingsVisible}
+          onPresetChange={handlePresetChange}
+          onPresetDownload={downloadPreset}
+        />
         <Midi
-          hidden={!midiSettingsVisible}
+          hidden={!settingsVisible}
           audioContext={audioContextRef.current}
           onNotePlayed={createOscillator}
           onNoteStopped={destroyOscillator}
+        />
+        <AudioSettings
+          hidden={!settingsVisible}
+          onDeviceChange={handleDestinationDeviceChange}
         />
       </div>
     </div>
