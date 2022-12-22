@@ -11,25 +11,29 @@ export const AudioSettings = ({hidden, onDeviceChange}) => {
     const newSelectedOutput = outputs.find(
       (output) => output.id === event.target.value
     );
-    
+
     if (!newSelectedOutput) {
-        return;
+      return;
     }
-    
+
     onDeviceChange(newSelectedOutput);
     setSelectedOutput(newSelectedOutput);
   };
-  
+
   const getOutputDevices = async () => {
+    await navigator.mediaDevices.getUserMedia({audio: true});
     const devices = await navigator.mediaDevices.enumerateDevices();
     if (devices) {
-      console.log(devices);
-      const newOutputs = devices.filter((device) => device.kind === 'audiooutput' && device.label !== '').map((device) => {
-        return {
+      const newOutputs = devices
+        .filter(
+          (device) => device.kind === 'audiooutput' && device.label !== ''
+        )
+        .map((device) => {
+          return {
             id: device.deviceId,
             name: device.label,
-        };
-      })
+          };
+        });
       setOutputs(newOutputs);
     }
   };
