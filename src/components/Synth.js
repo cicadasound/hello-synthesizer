@@ -20,10 +20,12 @@ import KEYS from '../data/KEYS';
 import NOTES from '../data/NOTES';
 
 function downloadObjectAsJson(exportObj, exportName) {
-  var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+  var dataStr =
+    'data:text/json;charset=utf-8,' +
+    encodeURIComponent(JSON.stringify(exportObj));
   var downloadAnchorNode = document.createElement('a');
-  downloadAnchorNode.setAttribute("href",     dataStr);
-  downloadAnchorNode.setAttribute("download", exportName + ".json");
+  downloadAnchorNode.setAttribute('href', dataStr);
+  downloadAnchorNode.setAttribute('download', exportName + '.json');
   document.body.appendChild(downloadAnchorNode); // required for firefox
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
@@ -70,6 +72,132 @@ const DEFAULTS = {
   },
 };
 
+const FACTORY_PRESETS = [
+  {
+    name: 'DEFAULT',
+    lfo: {
+      frequency: 1,
+      level: 0,
+      destination: 'filter',
+      type: 'triangle',
+    },
+    osc1: {
+      type: 'sawtooth',
+      detune: 0,
+      octave: 1,
+    },
+    osc2: {
+      type: 'square',
+      detune: 0,
+      octave: 1,
+    },
+    amp: {
+      level: 0.2,
+    },
+    filter: {
+      frequency: 1500,
+      q: 0,
+    },
+    delay: {
+      time: 0,
+      feedback: 0,
+    },
+    control: {
+      tempo: 90,
+      latch: false,
+      arp: false,
+    },
+    envelope: {
+      attack: 0,
+      decay: 0.5,
+      sustain: 0.2,
+      release: 0,
+    },
+  },
+  {
+    name: 'SOFT PAD',
+    lfo: {
+      frequency: 1,
+      level: 0.05,
+      destination: 'filter',
+      type: 'triangle',
+    },
+    osc1: {
+      type: 'sawtooth',
+      detune: 0,
+      octave: 1,
+    },
+    osc2: {
+      type: 'sawtooth',
+      detune: 0,
+      octave: 1,
+    },
+    amp: {
+      level: 0.2,
+    },
+    filter: {
+      frequency: 1500,
+      q: 0,
+    },
+    delay: {
+      time: 0,
+      feedback: 0,
+    },
+    control: {
+      tempo: 90,
+      latch: false,
+      arp: false,
+    },
+    envelope: {
+      attack: 0.5,
+      decay: 0.5,
+      sustain: 0.2,
+      release: 0.1,
+    },
+  },
+  {
+    name: 'PLUCKY ARP',
+    lfo: {
+      frequency: 1,
+      level: 0.05,
+      destination: 'filter',
+      type: 'triangle',
+    },
+    osc1: {
+      type: 'square',
+      detune: 0,
+      octave: 1,
+    },
+    osc2: {
+      type: 'square',
+      detune: 0,
+      octave: 2,
+    },
+    amp: {
+      level: 0.2,
+    },
+    filter: {
+      frequency: 1800,
+      q: 0,
+    },
+    delay: {
+      time: 0.3,
+      feedback: 0.3,
+    },
+    control: {
+      tempo: 120,
+      latch: true,
+      arp: true,
+    },
+    envelope: {
+      attack: 0,
+      decay: 0.2,
+      sustain: 0.1,
+      release: 0,
+    },
+  },
+];
+
 export const Synth = () => {
   const audioContextRef = useRef(null);
   const audioRef = useRef(null);
@@ -84,6 +212,8 @@ export const Synth = () => {
   const lfoGainRef = useRef(null);
   const arpClockRef = useRef(null);
 
+  const [presets, setPresets] = useState(FACTORY_PRESETS);
+  const [selectedPreset, setSelectedPreset] = useState(FACTORY_PRESETS[0]);
   const [poweredOn, setPoweredOn] = useState(false);
   const [currentNote, setCurrentNote] = useState(null);
   const [pressedKeys, setPressedKeys] = useState([]);
@@ -95,27 +225,63 @@ export const Synth = () => {
   const [envelope, setEnvelope] = useState(DEFAULTS.envelope);
   const [delay, setDelay] = useState(DEFAULTS.delay);
   const [control, setControl] = useState(DEFAULTS.control);
-  const [settingsVisible, setSettingsVisible] = useState(true);
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
   React.useEffect(() => {
     const synth = document.getElementById('synth');
     synth.focus();
     setTimeout(() => powerOn(), 300);
   }, []);
-  
-  const loadDefaultPreset = () => {
-    const savedSettings = localStorage.getItem('HelloSynthPreset');
 
-    if (!savedSettings) {
+  const loadStoredPresets = () => {
+    const savedPresets = localStorage.getItem('HelloSynthPresets');
+
+    if (!savedPresets) {
+      localStorage.setItem(
+        'HelloSynthPresets',
+        JSON.stringify(FACTORY_PRESETS)
+      );
+      handlePresetChange(FACTORY_PRESETS[0]);
       return;
     }
 
-    const preset = JSON.parse(savedSettings);
-    
-    handlePresetChange(preset);
+    const presets = JSON.parse(savedPresets);
+    handlePresetsChange(presets);
   };
 
-  const handlePresetChange = ({lfo, osc1, osc2, amp, filter, delay, control, envelope}) => {
+  const handlePresetsChange = (presets) => {
+    if (presets && presets.length > 0) {
+      setPresets(presets);
+      handlePresetChange(presets[0]);
+    }
+  };
+
+  const savePreset = () => {
+    const newPresetSettings = {
+      name: selectedPreset.name,
+      lfo,
+      osc1,
+      osc2,
+      amp,
+      filter,
+      delay,
+      control,
+      envelope,
+    };
+
+    const newPresets = presets.map((preset) => {
+      return preset.name === selectedPreset.name ? newPresetSettings : preset;
+    });
+
+    localStorage.setItem('HelloSynthPresets', JSON.stringify(newPresets));
+    setPreset(newPresets);
+  };
+
+  const handlePresetChange = (preset) => {
+    setSelectedPreset(preset);
+
+    const {name, lfo, osc1, osc2, amp, filter, delay, control, envelope} =
+      preset;
     handleLFOChange(lfo);
     handleOsc1Change(osc1);
     handleOsc2Change(osc2);
@@ -126,23 +292,9 @@ export const Synth = () => {
     handleEnvelopeChange(envelope);
   };
 
-  const savePreset = () => {
+  const handlePresetDownload = () => {
     const presetSettings = {
-      lfo,
-      osc1,
-      osc2,
-      amp,
-      filter,
-      delay,
-      control,
-      envelope,
-    };
-
-    localStorage.setItem('HelloSynthPreset', JSON.stringify(presetSettings));
-  };
-  
-  const downloadPreset = () => {
-    const presetSettings = {
+      name: selectedPreset.name,
       lfo,
       osc1,
       osc2,
@@ -153,10 +305,13 @@ export const Synth = () => {
       envelope,
     };
     downloadObjectAsJson(presetSettings, 'hello-synth');
-  }
-  
-  const uploadPreset = () => {
-    
+  };
+
+  const handlePresetUpload = (newPreset) => {
+    const newPresets = [...presets, newPreset];
+    localStorage.setItem('HelloSynthPresets', JSON.stringify(newPresets));
+    setPresets(newPresets);
+    handlePresetChange(newPreset);
   };
 
   useEffect(() => {
@@ -243,13 +398,14 @@ export const Synth = () => {
   };
 
   const handleDestinationDeviceChange = (newAudioDevice) => {
-    destinationRef.current = audioContextRef.current.createMediaStreamDestination();
+    destinationRef.current =
+      audioContextRef.current.createMediaStreamDestination();
     mainGainRef.current.disconnect();
     mainGainRef.current.connect(destinationRef.current);
     audioRef.current = new Audio();
     audioRef.current.srcObject = destinationRef.current.stream;
     audioRef.current.play();
-    audioRef.current.setSinkId(newAudioDevice.id)
+    audioRef.current.setSinkId(newAudioDevice.id);
   };
 
   const createOscillator = (note) => {
@@ -361,7 +517,7 @@ export const Synth = () => {
   const powerOn = () => {
     setPoweredOn(true);
     setupAudioContext();
-    loadDefaultPreset();
+    loadStoredPresets();
   };
 
   const handlePowerChange = () => {
@@ -474,8 +630,7 @@ export const Synth = () => {
       return;
     } else if (key === 's' && event.metaKey) {
       event.preventDefault();
-      // savePreset();
-      downloadPreset();
+      savePreset();
       return;
     }
 
@@ -590,8 +745,11 @@ export const Synth = () => {
       <div id="settings" className="panel">
         <Presets
           hidden={!settingsVisible}
+          presets={presets}
+          selectedPreset={selectedPreset}
           onPresetChange={handlePresetChange}
-          onPresetDownload={downloadPreset}
+          onPresetDownload={handlePresetDownload}
+          onPresetUpload={handlePresetUpload}
         />
         <Midi
           hidden={!settingsVisible}

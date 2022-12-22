@@ -23,13 +23,14 @@ export const AudioSettings = ({hidden, onDeviceChange}) => {
   const getOutputDevices = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     if (devices) {
-        const newOutputs = devices.filter((device) => device.kind === 'audiooutput').map((device) => {
-            return {
-                id: device.deviceId,
-                name: device.label,
-            };
-        })
-        setOutputs(newOutputs);
+      console.log(devices);
+      const newOutputs = devices.filter((device) => device.kind === 'audiooutput' && device.label !== '').map((device) => {
+        return {
+            id: device.deviceId,
+            name: device.label,
+        };
+      })
+      setOutputs(newOutputs);
     }
   };
 
@@ -42,7 +43,7 @@ export const AudioSettings = ({hidden, onDeviceChange}) => {
       <Module title="AUDIO SETTINGS">
         <label>DEVICE</label>
         <select
-          value={selectedOutput?.id || 'all'}
+          value={selectedOutput?.id || 'default'}
           onChange={handleOutputSelectChange}
         >
           <option key="default" value="default">
