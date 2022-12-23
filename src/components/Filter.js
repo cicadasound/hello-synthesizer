@@ -16,9 +16,12 @@ export function Filter({title, filter, onChange}) {
         <label>FREQ</label>
         <RangeSlider
           vertical
-          min="0"
-          max="5000"
-          step="100"
+          min={20}
+          max={20000}
+          minpos={0}
+          maxpos={100}
+          step={1}
+          scale="log"
           value={filter.frequency}
           onChange={(value) => handleChange('frequency', value)}
         />

@@ -51,9 +51,12 @@ export function LFO({title, lfo, onChange}) {
       <div className="control">
         <label>AMT</label>
         <RangeSlider
-          min="0"
-          max="10000"
-          step="100"
+          min={0}
+          max={300}
+          step={1}
+          minpos={0}
+          maxpos={100}
+          scale="log"
           value={lfo.level}
           onChange={(value) => handleChange('level', value)}
         />
@@ -79,9 +82,12 @@ export function LFO({title, lfo, onChange}) {
       <div className="control">
         <label>FRQ</label>
         <RangeSlider
-          min="0.1"
-          max="20"
-          step="0.1"
+          min={0}
+          max={100}
+          step={1}
+          minpos={0}
+          maxpos={100}
+          scale="log"
           value={lfo.frequency}
           onChange={(value) => handleChange('frequency', value)}
         />

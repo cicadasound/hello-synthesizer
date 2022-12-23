@@ -416,7 +416,10 @@ export const Synth = () => {
       }
     }
     if (lfoGainRef.current.gain.value !== newLFO.level) {
-      lfoGainRef.current.gain.value = newLFO.level;
+      lfoGainRef.current.gain.setValueAtTime(
+        newLFO.level,
+        audioContextRef.current.currentTime
+      );
     }
     if (lfoRef.current.type !== newLFO.type) {
       lfoRef.current.type = newLFO.type;
@@ -688,9 +691,14 @@ export const Synth = () => {
                   </div>
                 </div>
                 <div className="screen__bottom">
-                  <button className="lcd-button" onClick={handleSettingsToggle}>
-                    BACK
-                  </button>
+                  <div className="settings-panel">
+                    <button
+                      className="lcd-button"
+                      onClick={handleSettingsToggle}
+                    >
+                      BACK
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

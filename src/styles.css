@@ -309,10 +309,12 @@ a:focus {
   position: relative;
   margin-top: 0.4rem;
   margin-bottom: 1.6rem;
+  width: 18rem;
 }
 
 .range-container--vertical {
   margin-top: 0;
+  width: auto;
 }
 
 .range-container::before {
@@ -347,7 +349,7 @@ a:focus {
   outline: none;
   background: transparent;
   transform: translateX(0);
-  width: 18rem;
+  width: 17.6rem;
 }
 
 input[type='range'][orient='vertical'] {
@@ -671,7 +673,7 @@ input[type='range']::-ms-track {
 }
 
 .screen__bottom {
-  padding: 1.6rem;
+  padding: 0;
 }
 
 .screen__button {
@@ -788,12 +790,23 @@ input[type='range']::-ms-track {
   gap: 1rem;
   align-items: center;
   flex: 1 1 auto;
+  padding: 1.6rem;
 }
 
 .presets__controls {
   display: flex;
+  align-items: center;
+}
+
+.presets__control-group {
+  display: flex;
   gap: 1rem;
   align-items: center;
+  padding: 1.8rem 1.2rem;
+}
+
+.presets__control-group + .presets__control-group {
+  border-left: 0.1rem solid var(--green);
 }
 
 .selected-preset {
@@ -826,11 +839,12 @@ input[type='range']::-ms-track {
 
 .lcd-select {
   font-family: 'IBM Plex Mono', monospace;
-  flex: 0 1 28rem;
+  flex: 0 1 auto;
   min-width: 0;
+  width: 26rem;
   margin: 0;
   border: 0;
-  padding: 0.2rem 1.2rem;
+  padding: 0.1rem 1rem;
   font-size: 2rem;
   background: transparent;
   border: 0.2rem solid transparent;
@@ -849,6 +863,7 @@ input[type='range']::-ms-track {
 .lcd-text-field {
   font-family: 'IBM Plex Mono', monospace;
   flex: 0 1 auto;
+  width: 26rem;
   margin: 0;
   border: 0;
   padding: 0.2rem 1.2rem;

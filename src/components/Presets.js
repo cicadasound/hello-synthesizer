@@ -106,49 +106,53 @@ export const Presets = ({
         {presetNameMarkup}
       </div>
       <div className="presets__controls">
-        <button
-          className="lcd-button lcd-button--icon"
-          onClick={handleSaveClick}
-          disabled={!dirty && !editing}
-        >
-          <SaveIcon className="icon" />
-        </button>
-        <button className="lcd-button lcd-button--icon" onClick={onPresetAdd}>
-          <PlusIcon className="icon" />
-        </button>
-        <button
-          className="lcd-button lcd-button--icon"
-          disabled={editing}
-          onClick={onPresetEdit}
-        >
-          <EditIcon className="icon" />
-        </button>
-        <button
-          className="lcd-button lcd-button--icon"
-          htmlFor="upload"
-          onClick={handleUploadClick}
-        >
-          <UploadIcon className="icon" />
-        </button>
-        <input
-          className="file-input"
-          type="file"
-          id="upload"
-          ref={uploadRef}
-          onChange={handleUpload}
-        />
-        <button
-          className="lcd-button lcd-button--icon"
-          onClick={onPresetDownload}
-        >
-          <DownloadIcon className="icon" />
-        </button>
-        <button
-          className="lcd-button lcd-button--icon"
-          onClick={onSettingsToggle}
-        >
-          <SettingsIcon className="icon" />
-        </button>
+        <div className="presets__control-group">
+          <button
+            className="lcd-button lcd-button--icon"
+            onClick={handleSaveClick}
+            disabled={!dirty && !editing}
+          >
+            <SaveIcon className="icon" />
+          </button>
+          <button
+            className="lcd-button lcd-button--icon"
+            disabled={editing}
+            onClick={onPresetEdit}
+          >
+            <EditIcon className="icon" />
+          </button>
+        </div>
+        <div className="presets__control-group">
+          <button className="lcd-button lcd-button--icon" onClick={onPresetAdd}>
+            <PlusIcon className="icon" />
+          </button>
+          <button
+            className="lcd-button lcd-button--icon"
+            htmlFor="upload"
+            onClick={handleUploadClick}
+          >
+            <UploadIcon className="icon" />
+          </button>
+          <input
+            className="file-input"
+            type="file"
+            id="upload"
+            ref={uploadRef}
+            onChange={handleUpload}
+          />
+          <button
+            className="lcd-button lcd-button--icon"
+            onClick={onPresetDownload}
+          >
+            <DownloadIcon className="icon" />
+          </button>
+          <button
+            className="lcd-button lcd-button--icon"
+            onClick={onSettingsToggle}
+          >
+            <SettingsIcon className="icon" />
+          </button>
+        </div>
       </div>
     </div>
   );
