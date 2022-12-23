@@ -43,9 +43,10 @@ export const AudioSettings = ({hidden, onDeviceChange}) => {
 
   return (
     !hidden && (
-      <div>
-        <label>AUDIO DEVICE</label>
+      <div className="lcd-input">
+        <label className="lcd-input__label">AUDIO DEVICE</label>
         <select
+          className="lcd-select"
           value={selectedOutput?.id || 'default'}
           onChange={handleOutputSelectChange}
         >

@@ -18,6 +18,8 @@ import {Presets} from './Presets';
 
 import {FACTORY_PRESETS, KEYS, NOTES} from '../data';
 
+const LOCAL_STORAGE_KEY = 'HelloSynth-PresetListData';
+
 function downloadObjectAsJson(exportObj, exportName) {
   var dataStr =
     'data:text/json;charset=utf-8,' +
@@ -88,6 +90,7 @@ export const Synth = () => {
   const [presets, setPresets] = useState(FACTORY_PRESETS);
   const [selectedPreset, setSelectedPreset] = useState(FACTORY_PRESETS[0]);
   const [poweredOn, setPoweredOn] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [currentNote, setCurrentNote] = useState(null);
   const [pressedKeys, setPressedKeys] = useState([]);
   const [osc1, setOsc1] = useState(DEFAULTS.osc1);
@@ -99,38 +102,17 @@ export const Synth = () => {
   const [delay, setDelay] = useState(DEFAULTS.delay);
   const [control, setControl] = useState(DEFAULTS.control);
   const [settingsVisible, setSettingsVisible] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const synth = document.getElementById('synth');
     synth.focus();
     setTimeout(() => powerOn(), 300);
   }, []);
 
-  const loadStoredPresets = () => {
-    const savedPresets = localStorage.getItem('HelloSynthPresets');
-
-    if (!savedPresets) {
-      localStorage.setItem(
-        'HelloSynthPresets',
-        JSON.stringify(FACTORY_PRESETS)
-      );
-      handlePresetChange(FACTORY_PRESETS[0]);
-      return;
-    }
-
-    const presets = JSON.parse(savedPresets);
-    handlePresetsChange(presets);
-  };
-
-  const handlePresetsChange = (presets) => {
-    if (presets && presets.length > 0) {
-      setPresets(presets);
-      handlePresetChange(presets[0]);
-    }
-  };
-
-  const savePreset = () => {
-    const newPresetSettings = {
+  useEffect(() => {
+    const currentSettings = {
+      id: selectedPreset.id,
       name: selectedPreset.name,
       lfo,
       osc1,
@@ -141,13 +123,90 @@ export const Synth = () => {
       control,
       envelope,
     };
+    setDirty(
+      JSON.stringify(currentSettings) !== JSON.stringify(selectedPreset)
+    );
+  }, [lfo, osc1, osc2, amp, filter, delay, control, envelope, selectedPreset]);
 
+  const loadStoredPresets = () => {
+    const savedPresets = localStorage.getItem(LOCAL_STORAGE_KEY);
+
+    if (!savedPresets) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(FACTORY_PRESETS));
+      handlePresetChange(FACTORY_PRESETS[0]);
+      return;
+    }
+
+    const presets = JSON.parse(savedPresets);
+    handlePresetsChange(presets);
+  };
+
+  const handlePresetsChange = (presets) => {
+    const newPresets = presets.map((preset, index) => {
+      return {...preset, id: index + 1};
+    });
+    setPresets(newPresets);
+    if (newPresets && newPresets.length > 0) {
+      handlePresetChange(newPresets[0]);
+    }
+  };
+
+  const handlePresetEdit = () => {
+    setEditing(true);
+  };
+
+  const handlePresetAdd = () => {
+    const presetSettings = {
+      id: presets.length + 1,
+      name: 'init',
+      lfo,
+      osc1,
+      osc2,
+      amp,
+      filter,
+      delay,
+      control,
+      envelope,
+    };
+
+    const newPresets = [...presets, presetSettings];
+    setEditing(true);
+    setPresets(newPresets);
+    handlePresetChange(presetSettings);
+  };
+
+  const savePreset = (newName) => {
+    const {id, name} = selectedPreset;
+    const newPresetSettings = {
+      id,
+      name: newName ? newName : name,
+      lfo,
+      osc1,
+      osc2,
+      amp,
+      filter,
+      delay,
+      control,
+      envelope,
+    };
     const newPresets = presets.map((preset) => {
-      return preset.name === selectedPreset.name ? newPresetSettings : preset;
+      return preset.id === selectedPreset.id ? newPresetSettings : preset;
     });
 
-    localStorage.setItem('HelloSynthPresets', JSON.stringify(newPresets));
-    setPreset(newPresets);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newPresets));
+    setPresets(newPresets);
+    setSelectedPreset(newPresetSettings);
+    setEditing(false);
+  };
+
+  const handlePresetNameChange = (newPreset) => {
+    const newPresets = presets.map((preset) => {
+      return preset.id === selectedPreset.id ? newPreset : preset;
+    });
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newPresets));
+    setEditing(false);
+    setPresets(newPresets);
+    setSelectedPreset(newPreset);
   };
 
   const handlePresetChange = (preset) => {
@@ -181,8 +240,9 @@ export const Synth = () => {
   };
 
   const handlePresetUpload = (newPreset) => {
+    newPreset.id = presets.length + 1;
     const newPresets = [...presets, newPreset];
-    localStorage.setItem('HelloSynthPresets', JSON.stringify(newPresets));
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newPresets));
     setPresets(newPresets);
     handlePresetChange(newPreset);
   };
@@ -596,18 +656,24 @@ export const Synth = () => {
                 <div className="screen__bottom">
                   <Presets
                     presets={presets}
+                    editing={editing}
+                    dirty={dirty}
                     selectedPreset={selectedPreset}
                     onPresetChange={handlePresetChange}
                     onPresetDownload={handlePresetDownload}
                     onPresetUpload={handlePresetUpload}
+                    onPresetNameChange={handlePresetNameChange}
                     onSettingsToggle={handleSettingsToggle}
+                    onPresetAdd={handlePresetAdd}
+                    onPresetEdit={handlePresetEdit}
+                    onPresetSave={savePreset}
                   />
                 </div>
               </div>
             </div>
             <div className="flip-panel__back">
               <div className="screen">
-                <div className="screen__bottom">
+                <div className="screen__top">
                   <div className="settings-panel">
                     <Midi
                       hidden={!settingsVisible}
@@ -619,13 +685,12 @@ export const Synth = () => {
                       hidden={!settingsVisible}
                       onDeviceChange={handleDestinationDeviceChange}
                     />
-                    <button
-                      className="lcd-button lcd-"
-                      onClick={handleSettingsToggle}
-                    >
-                      BACK
-                    </button>
                   </div>
+                </div>
+                <div className="screen__bottom">
+                  <button className="lcd-button" onClick={handleSettingsToggle}>
+                    BACK
+                  </button>
                 </div>
               </div>
             </div>

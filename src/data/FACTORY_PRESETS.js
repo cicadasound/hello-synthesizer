@@ -1,5 +1,6 @@
 export const FACTORY_PRESETS = [
   {
+    id: 1,
     name: 'DEFAULT',
     lfo: {
       frequency: 1,
@@ -41,6 +42,7 @@ export const FACTORY_PRESETS = [
     },
   },
   {
+    id: 2,
     name: 'SOFT PAD',
     lfo: {
       frequency: 1,
@@ -82,6 +84,7 @@ export const FACTORY_PRESETS = [
     },
   },
   {
+    id: 3,
     name: 'PLUCKY ARP',
     lfo: {
       frequency: 1,

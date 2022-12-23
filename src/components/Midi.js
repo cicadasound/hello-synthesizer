@@ -67,9 +67,10 @@ export const Midi = ({audioContext, onNotePlayed, onNoteStopped, hidden}) => {
   return (
     midiAccessRef.current &&
     !hidden && (
-      <div>
-        <label>MIDI DEVICE</label>
+      <div className="lcd-input">
+        <label className="lcd-input__label">MIDI DEVICE</label>
         <select
+          className="lcd-select"
           value={selectedInput?.id || 'all'}
           onChange={handleInputSelectChange}
         >

@@ -1,70 +1,142 @@
-import React from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 
-import {ArrowIcon, UploadIcon, DownloadIcon, SettingsIcon} from '../icons';
+import {
+  UploadIcon,
+  DownloadIcon,
+  SettingsIcon,
+  PlusIcon,
+  EditIcon,
+  SaveIcon,
+} from '../icons';
 
 export const Presets = ({
+  editing,
+  dirty,
   presets,
   selectedPreset,
   onPresetChange,
   onPresetDownload,
   onPresetUpload,
   onSettingsToggle,
+  onPresetAdd,
+  onPresetEdit,
+  onPresetNameChange,
+  onPresetSave,
 }) => {
-  let currentPresetIndex;
-  presets.forEach((preset, index) => {
-    if (preset.name === selectedPreset.name) {
-      currentPresetIndex = index;
+  const [presetName, setPresetName] = useState(selectedPreset.name);
+  const uploadRef = useRef(null);
+
+  useEffect(() => {
+    setPresetName(selectedPreset.name);
+  }, [selectedPreset]);
+
+  const handlePresetChange = (event) => {
+    const newPreset = presets.find(
+      (preset) => `${preset.id}` === event.target.value
+    );
+    if (newPreset) {
+      onPresetChange(newPreset);
     }
-  });
-
-  const handlePrevPreset = () => {
-    const newSelectedPreset =
-      currentPresetIndex === 0
-        ? presets[presets.length - 1]
-        : presets[currentPresetIndex - 1];
-    onPresetChange(newSelectedPreset);
   };
 
-  const handleNextPreset = () => {
-    const newSelectedPreset =
-      currentPresetIndex === presets.length - 1
-        ? presets[0]
-        : presets[currentPresetIndex + 1];
-    onPresetChange(newSelectedPreset);
+  const handleUploadClick = () => {
+    if (uploadRef.current) {
+      uploadRef.current.click();
+    }
   };
+
+  const handlePresetNameChange = (event) => {
+    setPresetName(event.target.value);
+  };
+
+  const handlePresetNameKey = (event) => {
+    event.stopPropagation();
+
+    if (event.key === 'Enter') {
+      onPresetNameChange({...selectedPreset, name: presetName});
+    }
+  };
+
+  const handlePresetNameChanged = () => {
+    onPresetNameChange({...selectedPreset, name: presetName});
+  };
+
+  const handleSaveClick = () => {
+    if (editing) {
+      handlePresetNameChanged(presetName);
+    } else {
+      onPresetSave();
+    }
+  };
+
+  const handleUpload = (e) => {
+    const fileReader = new FileReader();
+    fileReader.readAsText(e.target.files[0], 'UTF-8');
+    fileReader.onload = (event) => {
+      onPresetUpload(JSON.parse(event.target.result));
+    };
+  };
+
+  const presetNameMarkup = editing ? (
+    <input
+      type="text"
+      className="lcd-text-field"
+      value={presetName}
+      onChange={handlePresetNameChange}
+      onKeyDown={handlePresetNameKey}
+    />
+  ) : (
+    <select
+      className="lcd-select"
+      value={selectedPreset.id}
+      onChange={handlePresetChange}
+    >
+      {presets.map((preset) => (
+        <option key={preset.id} value={preset.id}>
+          {preset.name} {dirty && selectedPreset.id === preset.id && `*`}
+        </option>
+      ))}
+    </select>
+  );
 
   return (
     <div className="presets">
       <div className="presets__selector">
-        <button
-          className="lcd-button lcd-button--icon"
-          onClick={handlePrevPreset}
-        >
-          <ArrowIcon className="icon icon--flip" />
-        </button>
-        <div className="selected-preset">
-          <div className="selected-preset__index">
-            PRESET {(currentPresetIndex + 1).toString().padStart(2, '0')}
-          </div>
-          <div className="selected-preset__name">{selectedPreset.name}</div>
-        </div>
-        <button
-          className="lcd-button lcd-button--icon"
-          onClick={handleNextPreset}
-        >
-          <ArrowIcon className="icon" />
-        </button>
+        <span>{selectedPreset.id.toString().padStart(2, '0')}</span>
+        {presetNameMarkup}
       </div>
       <div className="presets__controls">
-        <label className="lcd-button lcd-button--icon" htmlFor="upload">
+        <button
+          className="lcd-button lcd-button--icon"
+          onClick={handleSaveClick}
+          disabled={!dirty && !editing}
+        >
+          <SaveIcon className="icon" />
+        </button>
+        <button className="lcd-button lcd-button--icon" onClick={onPresetAdd}>
+          <PlusIcon className="icon" />
+        </button>
+        <button
+          className="lcd-button lcd-button--icon"
+          disabled={editing}
+          onClick={onPresetEdit}
+        >
+          <EditIcon className="icon" />
+        </button>
+        <button
+          className="lcd-button lcd-button--icon"
+          htmlFor="upload"
+          onClick={handleUploadClick}
+        >
           <UploadIcon className="icon" />
-          <input
-            className="file-input"
-            type="file"
-            id="upload"
-            onChange={onPresetUpload}
-          />
-        </label>
+        </button>
+        <input
+          className="file-input"
+          type="file"
+          id="upload"
+          ref={uploadRef}
+          onChange={handleUpload}
+        />
         <button
           className="lcd-button lcd-button--icon"
           onClick={onPresetDownload}

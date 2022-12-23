@@ -809,8 +809,65 @@ input[type='range']::-ms-track {
   font-size: 1.6rem;
 }
 
+.settings-panel {
+  padding: 1rem 2rem;
+}
+
+.lcd-input {
+  display: flex;
+  align-items: center;
+}
+
+.lcd-input__label {
+  flex: 1 1 22rem;
+  text-align: left;
+  font-size: 2rem;
+}
+
+.lcd-select {
+  font-family: 'IBM Plex Mono', monospace;
+  flex: 0 1 28rem;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0.2rem 1.2rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 0.2rem solid transparent;
+  border-radius: 0.8rem;
+  color: var(--green);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.lcd-select--wide {
+  flex: 1 1 38rem;
+}
+
+.lcd-text-field {
+  font-family: 'IBM Plex Mono', monospace;
+  flex: 0 1 auto;
+  margin: 0;
+  border: 0;
+  padding: 0.2rem 1.2rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 0.2rem solid transparent;
+  border-bottom-color: var(--green);
+  border-radius: 0;
+  color: var(--green);
+}
+
+.lcd-select:focus {
+  outline: 0;
+  border-color: var(--green);
+}
+
 .lcd-button {
-  flex: 0 0 3rem;
+  font-family: 'IBM Plex Mono', monospace;
+  flex: 1 1 auto;
   margin: 0;
   padding: 0;
   border-radius: 0.6rem;
@@ -823,6 +880,11 @@ input[type='range']::-ms-track {
   cursor: pointer;
 }
 
+.lcd-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .lcd-button:not(.lcd-button--icon) {
   padding: 0.8rem 1.4rem;
 }
@@ -830,6 +892,7 @@ input[type='range']::-ms-track {
 .lcd-button--icon {
   width: 3rem;
   height: 3rem;
+  flex: 0 0 3rem;
 }
 
 .lcd-button svg {

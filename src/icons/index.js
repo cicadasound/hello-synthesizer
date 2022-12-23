@@ -10,6 +10,9 @@ import {ReactComponent as ArrowIcon} from './arrow.svg';
 import {ReactComponent as DownloadIcon} from './download.svg';
 import {ReactComponent as UploadIcon} from './upload.svg';
 import {ReactComponent as SettingsIcon} from './settings.svg';
+import {ReactComponent as EditIcon} from './edit.svg';
+import {ReactComponent as PlusIcon} from './plus.svg';
+import {ReactComponent as SaveIcon} from './save.svg';
 
 export {
   TriangleIcon,
@@ -24,4 +27,7 @@ export {
   DownloadIcon,
   UploadIcon,
   SettingsIcon,
+  EditIcon,
+  PlusIcon,
+  SaveIcon,
 };
