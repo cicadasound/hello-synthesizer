@@ -1,7 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
 
-import KEYS from '../data/KEYS';
+import {KEYS} from '../data';
 
 export function Keyboard({
   pressedKeys,
@@ -22,7 +22,7 @@ export function Keyboard({
       'key--current': keyCurrent,
       'key--active': keyActive,
     });
-    
+
     return (
       <button
         className={keyClasses}

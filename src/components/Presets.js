@@ -1,57 +1,83 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React from 'react';
 
-import {Module} from './Module';
+import {ArrowIcon, UploadIcon, DownloadIcon, SettingsIcon} from '../icons';
 
-export const Presets = ({hidden, presets, selectedPreset, onPresetChange, onPresetDownload, onPresetUpload}) => {
-  const handlePresetChange = (event) => {
-    const newPreset = presets.find((preset) => preset.name === event.target.value);
-    if (!newPreset) {
-      return;
+export const Presets = ({
+  presets,
+  selectedPreset,
+  onPresetChange,
+  onPresetDownload,
+  onPresetUpload,
+  onSettingsToggle,
+}) => {
+  let currentPresetIndex;
+  presets.forEach((preset, index) => {
+    if (preset.name === selectedPreset.name) {
+      currentPresetIndex = index;
     }
-    onPresetChange(newPreset);
-  };
-  
+  });
+
   const handlePrevPreset = () => {
-    let currentPresetIndex;
-    presets.forEach((preset, index) => {
-      if (preset.name === selectedPreset.name) {
-        currentPresetIndex = index;
-      }
-    });
-    const newSelectedPreset = currentPresetIndex === 0 ? presets[presets.length] : presets[currentPresetIndex - 1];
+    const newSelectedPreset =
+      currentPresetIndex === 0
+        ? presets[presets.length - 1]
+        : presets[currentPresetIndex - 1];
     onPresetChange(newSelectedPreset);
-  }
-  
+  };
+
   const handleNextPreset = () => {
-    let currentPresetIndex;
-    presets.forEach((preset, index) => {
-      if (preset.name === selectedPreset.name) {
-        currentPresetIndex = index;
-      }
-    });
-    const newSelectedPreset = currentPresetIndex === presets.length - 1 ? presets[0] : presets[currentPresetIndex + 1];
+    const newSelectedPreset =
+      currentPresetIndex === presets.length - 1
+        ? presets[0]
+        : presets[currentPresetIndex + 1];
     onPresetChange(newSelectedPreset);
-  }
-  
-  const handleFileSelect = e => {
-    const fileReader = new FileReader();
-    fileReader.readAsText(e.target.files[0], "UTF-8");
-    fileReader.onload = e => {
-      const preset = JSON.parse(e.target.result);
-      onPresetUpload(preset);
-    };
   };
 
   return (
-    !hidden && (
-      <Module title="PRESETS">
-        <label>UPLOAD</label>
-        <input type="file" onChange={handleFileSelect} />
-        <button onClick={handlePrevPreset}>PREV</button>
-        <div>{selectedPreset.name}</div>
-        <button onClick={handleNextPreset}>NEXT</button>
-        <button onClick={onPresetDownload}>DOWNLOAD</button>
-      </Module>
-    )
+    <div className="presets">
+      <div className="presets__selector">
+        <button
+          className="lcd-button lcd-button--icon"
+          onClick={handlePrevPreset}
+        >
+          <ArrowIcon className="icon icon--flip" />
+        </button>
+        <div className="selected-preset">
+          <div className="selected-preset__index">
+            PRESET {(currentPresetIndex + 1).toString().padStart(2, '0')}
+          </div>
+          <div className="selected-preset__name">{selectedPreset.name}</div>
+        </div>
+        <button
+          className="lcd-button lcd-button--icon"
+          onClick={handleNextPreset}
+        >
+          <ArrowIcon className="icon" />
+        </button>
+      </div>
+      <div className="presets__controls">
+        <label className="lcd-button lcd-button--icon" htmlFor="upload">
+          <UploadIcon className="icon" />
+          <input
+            className="file-input"
+            type="file"
+            id="upload"
+            onChange={onPresetUpload}
+          />
+        </label>
+        <button
+          className="lcd-button lcd-button--icon"
+          onClick={onPresetDownload}
+        >
+          <DownloadIcon className="icon" />
+        </button>
+        <button
+          className="lcd-button lcd-button--icon"
+          onClick={onSettingsToggle}
+        >
+          <SettingsIcon className="icon" />
+        </button>
+      </div>
+    </div>
   );
 };

@@ -1,4 +1,4 @@
-const KEYS = {
+export const KEYS = {
   a: {
     note: 'C3',
     frequency: 130.81,
@@ -68,5 +68,3 @@ const KEYS = {
     frequency: '329.63',
   },
 };
-
-export default KEYS;

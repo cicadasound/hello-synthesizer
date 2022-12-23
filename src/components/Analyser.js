@@ -1,8 +1,6 @@
 import React, {useRef, useEffect} from 'react';
 import classnames from 'classnames';
 
-import {Module} from './Module';
-
 export function Analyser({audioContext, inputNode, poweredOn}) {
   const canvasRef = useRef(null);
   const analyserRef = useRef(null);
@@ -22,6 +20,12 @@ export function Analyser({audioContext, inputNode, poweredOn}) {
   }, [audioContext, inputNode, poweredOn]);
 
   const visualize = (canvasCtx) => {
+    const grey = getComputedStyle(document.documentElement).getPropertyValue(
+      '--grey-700'
+    );
+    const green = getComputedStyle(document.documentElement).getPropertyValue(
+      '--green'
+    );
     const WIDTH = canvasRef.current.width;
     const HEIGHT = canvasRef.current.height;
 
@@ -36,10 +40,10 @@ export function Analyser({audioContext, inputNode, poweredOn}) {
 
     const draw = () => {
       analyserRef.current.getByteTimeDomainData(dataArray);
-      canvasCtx.fillStyle = '#222222';
+      canvasCtx.fillStyle = grey;
       canvasCtx.fillRect(0, 0, WIDTH, HEIGHT);
       canvasCtx.lineWidth = 1;
-      canvasCtx.strokeStyle = '#08fd75';
+      canvasCtx.strokeStyle = green;
       canvasCtx.beginPath();
 
       const sliceWidth = (WIDTH * 1.0) / bufferLength;
@@ -72,10 +76,8 @@ export function Analyser({audioContext, inputNode, poweredOn}) {
   });
 
   return (
-    <Module dark>
-      <div className="analyser">
-        <canvas className={canvasClassName} ref={canvasRef} />
-      </div>
-    </Module>
+    <div className="analyser">
+      <canvas className={canvasClassName} ref={canvasRef} />
+    </div>
   );
 }

@@ -16,8 +16,7 @@ import {CicadaIcon, LogoIcon} from '../icons';
 import {Midi} from './Midi';
 import {Presets} from './Presets';
 
-import KEYS from '../data/KEYS';
-import NOTES from '../data/NOTES';
+import {FACTORY_PRESETS, KEYS, NOTES} from '../data';
 
 function downloadObjectAsJson(exportObj, exportName) {
   var dataStr =
@@ -26,7 +25,7 @@ function downloadObjectAsJson(exportObj, exportName) {
   var downloadAnchorNode = document.createElement('a');
   downloadAnchorNode.setAttribute('href', dataStr);
   downloadAnchorNode.setAttribute('download', exportName + '.json');
-  document.body.appendChild(downloadAnchorNode); // required for firefox
+  document.body.appendChild(downloadAnchorNode); // needed for firefox
   downloadAnchorNode.click();
   downloadAnchorNode.remove();
 }
@@ -71,132 +70,6 @@ const DEFAULTS = {
     release: 0,
   },
 };
-
-const FACTORY_PRESETS = [
-  {
-    name: 'DEFAULT',
-    lfo: {
-      frequency: 1,
-      level: 0,
-      destination: 'filter',
-      type: 'triangle',
-    },
-    osc1: {
-      type: 'sawtooth',
-      detune: 0,
-      octave: 1,
-    },
-    osc2: {
-      type: 'square',
-      detune: 0,
-      octave: 1,
-    },
-    amp: {
-      level: 0.2,
-    },
-    filter: {
-      frequency: 1500,
-      q: 0,
-    },
-    delay: {
-      time: 0,
-      feedback: 0,
-    },
-    control: {
-      tempo: 90,
-      latch: false,
-      arp: false,
-    },
-    envelope: {
-      attack: 0,
-      decay: 0.5,
-      sustain: 0.2,
-      release: 0,
-    },
-  },
-  {
-    name: 'SOFT PAD',
-    lfo: {
-      frequency: 1,
-      level: 0.05,
-      destination: 'filter',
-      type: 'triangle',
-    },
-    osc1: {
-      type: 'sawtooth',
-      detune: 0,
-      octave: 1,
-    },
-    osc2: {
-      type: 'sawtooth',
-      detune: 0,
-      octave: 1,
-    },
-    amp: {
-      level: 0.2,
-    },
-    filter: {
-      frequency: 1500,
-      q: 0,
-    },
-    delay: {
-      time: 0,
-      feedback: 0,
-    },
-    control: {
-      tempo: 90,
-      latch: false,
-      arp: false,
-    },
-    envelope: {
-      attack: 0.5,
-      decay: 0.5,
-      sustain: 0.2,
-      release: 0.1,
-    },
-  },
-  {
-    name: 'PLUCKY ARP',
-    lfo: {
-      frequency: 1,
-      level: 0.05,
-      destination: 'filter',
-      type: 'triangle',
-    },
-    osc1: {
-      type: 'square',
-      detune: 0,
-      octave: 1,
-    },
-    osc2: {
-      type: 'square',
-      detune: 0,
-      octave: 2,
-    },
-    amp: {
-      level: 0.2,
-    },
-    filter: {
-      frequency: 1800,
-      q: 0,
-    },
-    delay: {
-      time: 0.3,
-      feedback: 0.3,
-    },
-    control: {
-      tempo: 120,
-      latch: true,
-      arp: true,
-    },
-    envelope: {
-      attack: 0,
-      decay: 0.2,
-      sustain: 0.1,
-      release: 0,
-    },
-  },
-];
 
 export const Synth = () => {
   const audioContextRef = useRef(null);
@@ -685,7 +558,14 @@ export const Synth = () => {
     );
   };
 
+  const handleSettingsToggle = () => {
+    setSettingsVisible(!settingsVisible);
+  };
+
   const synthClassNames = classnames('synth', {'synth--disabled': !poweredOn});
+  const flipPanelClasses = classnames('flip-panel vertical', {
+    'flip-panel--flipped': settingsVisible,
+  });
 
   return (
     <div
@@ -702,11 +582,55 @@ export const Synth = () => {
             <LogoIcon className="logo" />
           </div>
         </Module>
-        <Analyser
-          audioContext={audioContextRef.current}
-          inputNode={mainGainRef.current}
-          poweredOn={poweredOn}
-        />
+        <div className={flipPanelClasses}>
+          <div className="flip-panel__flipper">
+            <div className="flip-panel__front">
+              <div className="screen">
+                <div className="screen__top">
+                  <Analyser
+                    audioContext={audioContextRef.current}
+                    inputNode={mainGainRef.current}
+                    poweredOn={poweredOn}
+                  />
+                </div>
+                <div className="screen__bottom">
+                  <Presets
+                    presets={presets}
+                    selectedPreset={selectedPreset}
+                    onPresetChange={handlePresetChange}
+                    onPresetDownload={handlePresetDownload}
+                    onPresetUpload={handlePresetUpload}
+                    onSettingsToggle={handleSettingsToggle}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flip-panel__back">
+              <div className="screen">
+                <div className="screen__bottom">
+                  <div className="settings-panel">
+                    <Midi
+                      hidden={!settingsVisible}
+                      audioContext={audioContextRef.current}
+                      onNotePlayed={createOscillator}
+                      onNoteStopped={destroyOscillator}
+                    />
+                    <AudioSettings
+                      hidden={!settingsVisible}
+                      onDeviceChange={handleDestinationDeviceChange}
+                    />
+                    <button
+                      className="lcd-button lcd-"
+                      onClick={handleSettingsToggle}
+                    >
+                      BACK
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <Module dark>
           <a href="https://cicadasound.ca">
             <CicadaIcon className="cicada" />
@@ -742,26 +666,6 @@ export const Synth = () => {
         currentNote={currentNote}
         poweredOn={poweredOn}
       />
-      <div id="settings" className="panel">
-        <Presets
-          hidden={!settingsVisible}
-          presets={presets}
-          selectedPreset={selectedPreset}
-          onPresetChange={handlePresetChange}
-          onPresetDownload={handlePresetDownload}
-          onPresetUpload={handlePresetUpload}
-        />
-        <Midi
-          hidden={!settingsVisible}
-          audioContext={audioContextRef.current}
-          onNotePlayed={createOscillator}
-          onNoteStopped={destroyOscillator}
-        />
-        <AudioSettings
-          hidden={!settingsVisible}
-          onDeviceChange={handleDestinationDeviceChange}
-        />
-      </div>
     </div>
   );
 };

@@ -3,7 +3,6 @@ import React, {useEffect, useState, useRef} from 'react';
 import {Module} from './Module';
 
 export const AudioSettings = ({hidden, onDeviceChange}) => {
-  const midiAccessRef = useRef(null);
   const [outputs, setOutputs] = useState([]);
   const [selectedOutput, setSelectedOutput] = useState(null);
 
@@ -44,8 +43,8 @@ export const AudioSettings = ({hidden, onDeviceChange}) => {
 
   return (
     !hidden && (
-      <Module title="AUDIO SETTINGS">
-        <label>DEVICE</label>
+      <div>
+        <label>AUDIO DEVICE</label>
         <select
           value={selectedOutput?.id || 'default'}
           onChange={handleOutputSelectChange}
@@ -61,7 +60,7 @@ export const AudioSettings = ({hidden, onDeviceChange}) => {
             );
           })}
         </select>
-      </Module>
+      </div>
     )
   );
 };

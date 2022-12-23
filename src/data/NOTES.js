@@ -1,4 +1,4 @@
-const NOTES = [
+export const NOTES = [
   {
     midi: 0,
     name: 'C-1',
@@ -640,5 +640,3 @@ const NOTES = [
     frequency: 12543.85,
   },
 ];
-
-export default NOTES;
