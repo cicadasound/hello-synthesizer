@@ -1,6 +1,6 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useState} from 'react';
 
-import {Module} from './Module';
+import {Select} from './Select';
 
 export const AudioSettings = ({hidden, onDeviceChange}) => {
   const [outputs, setOutputs] = useState([]);
@@ -45,14 +45,14 @@ export const AudioSettings = ({hidden, onDeviceChange}) => {
     !hidden && (
       <div className="lcd-input">
         <label className="lcd-input__label">AUDIO DEVICE</label>
-        <select
-          className="lcd-select"
+        <Select
+          wide
           value={selectedOutput?.id || 'default'}
           onChange={handleOutputSelectChange}
         >
-          <option key="default" value="default">
+          <Select.Option key="default" value="default">
             Default
-          </option>
+          </Select.Option>
           {outputs.map((output) => {
             return (
               <option key={output.id} value={output.id}>
@@ -60,7 +60,7 @@ export const AudioSettings = ({hidden, onDeviceChange}) => {
               </option>
             );
           })}
-        </select>
+        </Select>
       </div>
     )
   );

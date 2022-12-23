@@ -11,6 +11,7 @@
   --green: #46c278;
 
   --inner-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.5);
+  --lcd-focus-shadow: 0 0 0.2rem 0.2rem var(--green);
   --border-color: var(--grey-200);
   --active-border-color: var(--tangerine);
   --text-color: var(--black);
@@ -826,9 +827,19 @@ input[type='range']::-ms-track {
   padding: 1rem 2rem;
 }
 
+.settings-panel--bottom {
+  margin-top: 1.2rem;
+}
+
 .lcd-input {
   display: flex;
   align-items: center;
+}
+
+.lcd-text-field:focus {
+  outline: 0;
+  border-radius: 0.8rem;
+  box-shadow: var(--lcd-focus-shadow);
 }
 
 .lcd-input__label {
@@ -838,13 +849,19 @@ input[type='range']::-ms-track {
 }
 
 .lcd-select {
-  font-family: 'IBM Plex Mono', monospace;
-  flex: 0 1 auto;
-  min-width: 0;
+  display: flex;
   width: 26rem;
+  flex: 0 1 auto;
+  position: relative;
+}
+
+.lcd-select__control {
+  font-family: 'IBM Plex Mono', monospace;
+  min-width: 0;
   margin: 0;
   border: 0;
-  padding: 0.1rem 1rem;
+  width: 100%;
+  padding: 0.1rem 3rem 0.1rem 1rem;
   font-size: 2rem;
   background: transparent;
   border: 0.2rem solid transparent;
@@ -854,10 +871,25 @@ input[type='range']::-ms-track {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  appearance: none;
 }
 
 .lcd-select--wide {
-  flex: 1 1 38rem;
+  width: 36rem;
+}
+
+.lcd-select__control:focus {
+  outline: 0;
+  box-shadow: var(--lcd-focus-shadow);
+}
+
+.lcd-select__icon {
+  position: absolute;
+  top: 0;
+  right: 1.4rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 .lcd-text-field {
@@ -875,11 +907,6 @@ input[type='range']::-ms-track {
   color: var(--green);
 }
 
-.lcd-select:focus {
-  outline: 0;
-  border-color: var(--green);
-}
-
 .lcd-button {
   font-family: 'IBM Plex Mono', monospace;
   flex: 1 1 auto;
@@ -893,6 +920,11 @@ input[type='range']::-ms-track {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+
+.lcd-button:focus {
+  outline: 0;
+  box-shadow: var(--lcd-focus-shadow);
 }
 
 .lcd-button:disabled {
@@ -925,4 +957,16 @@ input[type='range']::-ms-track {
 
 .icon--flip {
   transform: scaleX(-1);
+}
+
+.icon--rotate-90 {
+  transform: rotate(90deg);
+}
+
+.icon--rotate-180 {
+  transform: rotate(180deg);
+}
+
+.icon--rotate-270 {
+  transform: rotate(270deg);
 }

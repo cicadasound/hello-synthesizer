@@ -107,6 +107,8 @@ export const Synth = () => {
   useEffect(() => {
     const synth = document.getElementById('synth');
     synth.focus();
+    setupAudioContext();
+    loadStoredPresets();
     setTimeout(() => powerOn(), 300);
   }, []);
 
@@ -446,14 +448,11 @@ export const Synth = () => {
       destroyOscillator(note);
     });
     setPressedKeys([]);
-    destroyAudioContext();
     setPoweredOn(false);
   };
 
   const powerOn = () => {
     setPoweredOn(true);
-    setupAudioContext();
-    loadStoredPresets();
   };
 
   const handlePowerChange = () => {
@@ -691,7 +690,7 @@ export const Synth = () => {
                   </div>
                 </div>
                 <div className="screen__bottom">
-                  <div className="settings-panel">
+                  <div className="settings-panel settings-panel--bottom">
                     <button
                       className="lcd-button"
                       onClick={handleSettingsToggle}

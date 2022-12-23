@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 
+import {Select} from './Select';
+
 import {
   UploadIcon,
   DownloadIcon,
@@ -86,17 +88,13 @@ export const Presets = ({
       onKeyDown={handlePresetNameKey}
     />
   ) : (
-    <select
-      className="lcd-select"
-      value={selectedPreset.id}
-      onChange={handlePresetChange}
-    >
+    <Select value={selectedPreset.id} onChange={handlePresetChange}>
       {presets.map((preset) => (
-        <option key={preset.id} value={preset.id}>
+        <Select.Option key={preset.id} value={preset.id}>
           {preset.name} {dirty && selectedPreset.id === preset.id && `*`}
-        </option>
+        </Select.Option>
       ))}
-    </select>
+    </Select>
   );
 
   return (

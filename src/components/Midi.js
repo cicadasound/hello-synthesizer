@@ -1,6 +1,6 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useState, useRef} from 'react';
 
-import {Module} from './Module';
+import {Select} from './Select';
 
 import {NOTES} from '../data';
 
@@ -69,22 +69,22 @@ export const Midi = ({audioContext, onNotePlayed, onNoteStopped, hidden}) => {
     !hidden && (
       <div className="lcd-input">
         <label className="lcd-input__label">MIDI DEVICE</label>
-        <select
-          className="lcd-select"
+        <Select
+          wide
           value={selectedInput?.id || 'all'}
           onChange={handleInputSelectChange}
         >
-          <option key="all" value="all">
+          <Select.Option key="all" value="all">
             All
-          </option>
+          </Select.Option>
           {inputs.map((input) => {
             return (
-              <option key={input.id} value={input.id}>
+              <Select.Option key={input.id} value={input.id}>
                 {input.name}
-              </option>
+              </Select.Option>
             );
           })}
-        </select>
+        </Select>
       </div>
     )
   );
