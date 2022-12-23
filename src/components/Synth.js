@@ -20,6 +20,15 @@ import {FACTORY_PRESETS, KEYS, NOTES} from '../data';
 
 const LOCAL_STORAGE_KEY = 'HelloSynth-PresetListData';
 
+function slugify(str) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function downloadObjectAsJson(exportObj, exportName) {
   var dataStr =
     'data:text/json;charset=utf-8,' +
@@ -238,7 +247,7 @@ export const Synth = () => {
       control,
       envelope,
     };
-    downloadObjectAsJson(presetSettings, 'hello-synth');
+    downloadObjectAsJson(presetSettings, slugify(presetSettings.name));
   };
 
   const handlePresetUpload = (newPreset) => {
