@@ -52,7 +52,7 @@ export function LFO({title, lfo, onChange}) {
         <label>AMT</label>
         <RangeSlider
           min={0}
-          max={600}
+          max={1000}
           step={1}
           minpos={0}
           maxpos={100}

@@ -16,7 +16,7 @@ export function Envelope({title, envelope, onChange}) {
         <label>A</label>
         <RangeSlider
           min={0}
-          max={5}
+          max={10}
           step={1}
           minpos={0}
           maxpos={100}
@@ -44,8 +44,11 @@ export function Envelope({title, envelope, onChange}) {
         <label>S</label>
         <RangeSlider
           min={0}
-          max={1}
-          step={0.05}
+          max={0.65}
+          step={0.5}
+          minpos={0}
+          maxpos={100}
+          scale="log"
           value={envelope.sustain}
           onChange={(value) => handleChange('sustain', value)}
           vertical={true}
@@ -55,7 +58,7 @@ export function Envelope({title, envelope, onChange}) {
         <label>R</label>
         <RangeSlider
           min={0}
-          max={5}
+          max={10}
           step={1}
           minpos={0}
           maxpos={100}

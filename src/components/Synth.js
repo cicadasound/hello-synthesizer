@@ -427,8 +427,11 @@ export const Synth = () => {
       }
     }
     if (lfoGainRef.current.gain.value !== newLFO.level) {
+      const scaledLevel =
+        newLFO.destination === filter ? newLFO.level * 2 : newLFO.level;
+
       lfoGainRef.current.gain.setValueAtTime(
-        newLFO.level,
+        scaledLevel,
         audioContextRef.current.currentTime
       );
     }
