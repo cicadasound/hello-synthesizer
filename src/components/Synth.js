@@ -5,6 +5,7 @@ const {
   adjectives,
   animals,
 } = require('unique-names-generator');
+import 'cancelandholdattime-polyfill';
 
 import {Analyser} from './Analyser';
 import {AudioSettings} from './AudioSettings';
@@ -118,12 +119,64 @@ export const Synth = () => {
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    const synth = document.getElementById('synth');
-    synth.focus();
     setupAudioContext();
     loadStoredPresets();
     setTimeout(() => powerOn(), 300);
   }, []);
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const key = event.key;
+
+      if (key === 'Escape') {
+        pressedKeys.forEach((note) => {
+          stopNote(note, true);
+        });
+        setPressedKeys([]);
+        return;
+      } else if (key === 'M' && event.shiftKey) {
+        setSettingsVisible(!settingsVisible);
+        return;
+      } else if (key === ' ') {
+        toggleArp();
+      } else if (key === 's' && event.metaKey) {
+        event.preventDefault();
+        savePreset();
+        return;
+      }
+
+      if (!KEYS[key]) {
+        return;
+      }
+
+      const note = NOTES.find((n) => n.name === KEYS[key].note);
+
+      if (note && poweredOn) {
+        playNote(note);
+      }
+    };
+
+    const handleKeyUp = (event) => {
+      const key = event.key;
+
+      if (!KEYS[key]) {
+        return;
+      }
+
+      const note = NOTES.find((n) => n.name === KEYS[key].note);
+      if (note) {
+        stopNote(note);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [poweredOn, pressedKeys]);
 
   useEffect(() => {
     const currentSettings = {
@@ -615,48 +668,6 @@ export const Synth = () => {
     setPressedKeys(filteredKeys);
   };
 
-  const handleKeyDown = (event) => {
-    const key = event.key;
-    if (key === 'Escape') {
-      pressedKeys.forEach((note) => {
-        stopNote(note, true);
-      });
-      setPressedKeys([]);
-      return;
-    } else if (key === 'M' && event.shiftKey) {
-      setSettingsVisible(!settingsVisible);
-      return;
-    } else if (key === ' ') {
-      toggleArp();
-    } else if (key === 's' && event.metaKey) {
-      event.preventDefault();
-      savePreset();
-      return;
-    }
-
-    if (!KEYS[key]) {
-      return;
-    }
-
-    const note = NOTES.find((n) => n.name === KEYS[key].note);
-    if (note && poweredOn) {
-      playNote(note);
-    }
-  };
-
-  const handleKeyUp = (event) => {
-    const key = event.key;
-
-    if (!KEYS[key]) {
-      return;
-    }
-
-    const note = NOTES.find((n) => n.name === KEYS[key].note);
-    if (note) {
-      stopNote(note);
-    }
-  };
-
   const handleKeyTouchStart = (event) => {
     const key = event.target.getAttribute('data-key');
     if (!KEYS[key]) {
@@ -695,13 +706,7 @@ export const Synth = () => {
   });
 
   return (
-    <div
-      id="synth"
-      className={synthClassNames}
-      onKeyUp={handleKeyUp}
-      onKeyDown={handleKeyDown}
-      tabIndex={0}
-    >
+    <div id="synth" className={synthClassNames} tabIndex={0}>
       <div className="synth__controls">
         <Module dark>
           <div className="header">

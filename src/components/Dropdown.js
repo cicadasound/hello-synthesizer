@@ -41,11 +41,6 @@ export const Dropdown = ({
   const handleOptionSelect = (id) => {
     onSelectionChange(id);
     setListVisible(false);
-
-    const synthNode = document.getElementById('synth');
-    if (synthNode) {
-      synthNode.focus();
-    }
   };
 
   const handleEditOption = (id) => {

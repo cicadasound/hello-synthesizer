@@ -5,11 +5,6 @@ export const Select = ({wide, children, onChange, ...rest}) => {
   const selectClassNames = classnames('lcd-select', {'lcd-select--wide': wide});
   const handleChange = (event) => {
     onChange(event);
-
-    const synthNode = document.getElementById('synth');
-    if (synthNode) {
-      synthNode.focus();
-    }
   };
 
   return (

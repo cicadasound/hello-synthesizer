@@ -65,10 +65,8 @@ export function RangeSlider({
       sliderRef.current.addEventListener('wheel', handleWheel, {
         passive: false,
       });
-      return function cleanup() {
-        sliderRef.current.removeEventListener('wheel', handleWheel, {
-          passive: false,
-        });
+      return () => {
+        sliderRef.current.removeEventListener('wheel', handleWheel);
       };
     }
   }, []);
@@ -121,8 +119,6 @@ export function RangeSlider({
   const firstTicks = createTicks(false);
   const secondTicks = createTicks(true);
 
-  const orient = vertical ? {orient: 'vertical'} : {};
-
   return (
     <div className={className}>
       <svg role="presentation" className="range-ticks">
@@ -133,7 +129,6 @@ export function RangeSlider({
       </svg>
       <input
         type="range"
-        {...orient}
         {...rest}
         className="range-container__input"
         min={minpos ? minpos : min}
