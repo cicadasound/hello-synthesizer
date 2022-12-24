@@ -686,6 +686,7 @@ input[type='range']::-ms-track {
 /* entire container, keeps perspective */
 .flip-panel {
   perspective: 1000px;
+  z-index: 2;
   --flip-panel-height: 17rem;
   --flip-panel-width: 60rem;
 }
@@ -949,6 +950,113 @@ input[type='range']::-ms-track {
 
 .lcd-button svg {
   display: block;
+}
+
+.lcd-dropdown {
+  display: flex;
+  flex: 1 1 26rem;
+  position: relative;
+}
+
+.lcd-dropdown__options {
+  display: none;
+  position: absolute;
+  top: calc(100% + 2.6rem);
+  background: var(--grey-700);
+  border: 0.1rem solid var(--green);
+  border-radius: 0.8rem;
+  left: 0;
+  width: 100%;
+  z-index: 99;
+  padding: 1rem;
+}
+
+.lcd-dropdown--active .lcd-dropdown__options {
+  display: block;
+}
+
+.lcd-dropdown__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lcd-dropdown__list li {
+  margin: 0;
+  padding: 0;
+}
+
+.lcd-dropdown__control {
+  font-family: var(--font-family-mono);
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  flex: 1 1 100%;
+  padding: 0.1rem 1rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 0.2rem solid transparent;
+  border-radius: 0.8rem;
+  color: var(--green);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.lcd-dropdown__control:focus {
+  outline: 0;
+  box-shadow: var(--lcd-focus-shadow);
+}
+
+.lcd-dropdown__label {
+  flex: 1 1 100%;
+  display: flex;
+  gap: 1rem;
+}
+
+.lcd-dropdown .lcd-select__icon {
+  position: absolute;
+  top: 0;
+  right: 1.4rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.lcd-option {
+  display: flex;
+}
+
+.lcd-option__actions {
+  display: flex;
+}
+
+.lcd-option__action {
+  border: 0;
+  background: 0;
+  color: var(--green);
+  cursor: pointer;
+}
+
+.lcd-option__control {
+  font-family: var(--font-family-mono);
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  width: 100%;
+  padding: 0.1rem 3rem 0.1rem 1rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 0.2rem solid transparent;
+  border-radius: 0.8rem;
+  color: var(--green);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 1rem;
 }
 
 .file-input {

@@ -1,18 +1,16 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import {Select} from './Select';
+import {Dropdown} from './Dropdown';
 
 import {
   UploadIcon,
   DownloadIcon,
   SettingsIcon,
   PlusIcon,
-  EditIcon,
   SaveIcon,
 } from '../icons';
 
 export const Presets = ({
-  editing,
   dirty,
   presets,
   selectedPreset,
@@ -21,21 +19,15 @@ export const Presets = ({
   onPresetUpload,
   onSettingsToggle,
   onPresetAdd,
-  onPresetEdit,
   onPresetNameChange,
   onPresetSave,
+  onPresetDelete,
 }) => {
-  const [presetName, setPresetName] = useState(selectedPreset.name);
   const uploadRef = useRef(null);
 
-  useEffect(() => {
-    setPresetName(selectedPreset.name);
-  }, [selectedPreset]);
-
-  const handlePresetChange = (event) => {
-    const newPreset = presets.find(
-      (preset) => `${preset.id}` === event.target.value
-    );
+  const handlePresetChange = (value) => {
+    console.log(value);
+    const newPreset = presets.find((preset) => `${preset.id}` === `${value}`);
     if (newPreset) {
       onPresetChange(newPreset);
     }
@@ -47,28 +39,19 @@ export const Presets = ({
     }
   };
 
-  const handlePresetNameChange = (event) => {
-    setPresetName(event.target.value);
-  };
-
-  const handlePresetNameKey = (event) => {
-    event.stopPropagation();
-
-    if (event.key === 'Enter') {
-      onPresetNameChange({...selectedPreset, name: presetName});
+  const handlePresetNameChange = ({id, name}) => {
+    const newPreset = presets.find((preset) => `${preset.id}` === `${id}`);
+    if (newPreset) {
+      onPresetNameChange({...newPreset, name});
     }
   };
 
-  const handlePresetNameChanged = () => {
-    onPresetNameChange({...selectedPreset, name: presetName});
+  const handlePresetDelete = (id) => {
+    onPresetDelete(id);
   };
 
   const handleSaveClick = () => {
-    if (editing) {
-      handlePresetNameChanged(presetName);
-    } else {
-      onPresetSave();
-    }
+    onPresetSave();
   };
 
   const handleUpload = (e) => {
@@ -79,45 +62,35 @@ export const Presets = ({
     };
   };
 
-  const presetNameMarkup = editing ? (
-    <input
-      type="text"
-      className="lcd-text-field"
-      value={presetName}
-      onChange={handlePresetNameChange}
-      onKeyDown={handlePresetNameKey}
+  const presetOptions = presets.map((preset) => {
+    return {
+      id: preset.id,
+      label: preset.name,
+    };
+  });
+
+  const presetNameMarkup = (
+    <Dropdown
+      selected={selectedPreset.id}
+      dirty={dirty}
+      onSelectionChange={handlePresetChange}
+      onNameChange={handlePresetNameChange}
+      onDelete={handlePresetDelete}
+      options={presetOptions}
     />
-  ) : (
-    <Select value={selectedPreset.id} onChange={handlePresetChange}>
-      {presets.map((preset) => (
-        <Select.Option key={preset.id} value={preset.id}>
-          {preset.name} {dirty && selectedPreset.id === preset.id && `*`}
-        </Select.Option>
-      ))}
-    </Select>
   );
 
   return (
     <div className="presets">
-      <div className="presets__selector">
-        <span>{selectedPreset.id.toString().padStart(2, '0')}</span>
-        {presetNameMarkup}
-      </div>
+      <div className="presets__selector">{presetNameMarkup}</div>
       <div className="presets__controls">
         <div className="presets__control-group">
           <button
             className="lcd-button lcd-button--icon"
             onClick={handleSaveClick}
-            disabled={!dirty && !editing}
+            disabled={!dirty}
           >
             <SaveIcon className="icon" />
-          </button>
-          <button
-            className="lcd-button lcd-button--icon"
-            disabled={editing}
-            onClick={onPresetEdit}
-          >
-            <EditIcon className="icon" />
           </button>
         </div>
         <div className="presets__control-group">

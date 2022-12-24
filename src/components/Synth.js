@@ -99,7 +99,6 @@ export const Synth = () => {
   const [presets, setPresets] = useState(FACTORY_PRESETS);
   const [selectedPreset, setSelectedPreset] = useState(FACTORY_PRESETS[0]);
   const [poweredOn, setPoweredOn] = useState(false);
-  const [editing, setEditing] = useState(false);
   const [currentNote, setCurrentNote] = useState(null);
   const [pressedKeys, setPressedKeys] = useState([]);
   const [osc1, setOsc1] = useState(DEFAULTS.osc1);
@@ -162,10 +161,6 @@ export const Synth = () => {
     }
   };
 
-  const handlePresetEdit = () => {
-    setEditing(true);
-  };
-
   const handlePresetAdd = () => {
     const presetSettings = {
       id: presets.length + 1,
@@ -181,9 +176,17 @@ export const Synth = () => {
     };
 
     const newPresets = [...presets, presetSettings];
-    setEditing(true);
     setPresets(newPresets);
     handlePresetChange(presetSettings);
+  };
+
+  const handlePresetDelete = (id) => {
+    const newPresets = presets.filter((preset) => preset.id !== id);
+    if (selectedPreset.id === id) {
+      setSelectedPreset(presets[0]);
+    }
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newPresets));
+    setPresets(newPresets);
   };
 
   const savePreset = (newName) => {
@@ -207,17 +210,14 @@ export const Synth = () => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newPresets));
     setPresets(newPresets);
     setSelectedPreset(newPresetSettings);
-    setEditing(false);
   };
 
   const handlePresetNameChange = (newPreset) => {
     const newPresets = presets.map((preset) => {
-      return preset.id === selectedPreset.id ? newPreset : preset;
+      return preset.id === newPreset.id ? newPreset : preset;
     });
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newPresets));
-    setEditing(false);
     setPresets(newPresets);
-    setSelectedPreset(newPreset);
   };
 
   const handlePresetChange = (preset) => {
@@ -710,7 +710,6 @@ export const Synth = () => {
                 <div className="screen__bottom">
                   <Presets
                     presets={presets}
-                    editing={editing}
                     dirty={dirty}
                     selectedPreset={selectedPreset}
                     onPresetChange={handlePresetChange}
@@ -719,8 +718,8 @@ export const Synth = () => {
                     onPresetNameChange={handlePresetNameChange}
                     onSettingsToggle={handleSettingsToggle}
                     onPresetAdd={handlePresetAdd}
-                    onPresetEdit={handlePresetEdit}
                     onPresetSave={savePreset}
+                    onPresetDelete={handlePresetDelete}
                   />
                 </div>
               </div>

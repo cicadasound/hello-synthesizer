@@ -13,6 +13,7 @@ import {ReactComponent as SettingsIcon} from './settings.svg';
 import {ReactComponent as EditIcon} from './edit.svg';
 import {ReactComponent as PlusIcon} from './plus.svg';
 import {ReactComponent as SaveIcon} from './save.svg';
+import {ReactComponent as DeleteIcon} from './delete.svg';
 
 export {
   TriangleIcon,
@@ -30,4 +31,5 @@ export {
   EditIcon,
   PlusIcon,
   SaveIcon,
+  DeleteIcon,
 };
