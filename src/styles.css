@@ -36,7 +36,7 @@ html {
 body {
   color: var(--text-color);
   background-color: var(--main-background);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-family-mono);
   font-weight: 600;
   margin: 0;
   padding: 0;
@@ -163,6 +163,7 @@ a:focus {
 }
 
 .key {
+  font-family: var(--font-family-mono);
   color: var(--border-color);
   background: var(--grey-600);
   border: 0.1rem solid var(--border-color);
@@ -524,6 +525,7 @@ input[type='range']::-ms-track {
 }
 
 .toggle__control {
+  font-family: var(--font-family-mono);
   cursor: pointer;
   width: 4rem;
   height: 2rem;
@@ -575,6 +577,7 @@ input[type='range']::-ms-track {
 
 .toggle-group__toggle {
   cursor: pointer;
+  font-family: var(--font-family-mono);
   padding: 0 0.4rem;
   display: flex;
   justify-content: center;
