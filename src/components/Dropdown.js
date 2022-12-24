@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import classnames from 'classnames';
 
 import {ArrowIcon, SaveIcon, EditIcon, DeleteIcon} from '../icons';
@@ -14,6 +14,20 @@ export const Dropdown = ({
   const [listVisible, setListVisible] = useState(false);
   const [presetName, setPresetName] = useState('');
   const [editingOption, setEditingOption] = useState(null);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setListVisible(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   const handleOptionSelect = (id) => {
     onSelectionChange(id);
@@ -131,7 +145,7 @@ export const Dropdown = ({
   });
 
   return (
-    <div className={dropdownClassNames}>
+    <div className={dropdownClassNames} ref={dropdownRef}>
       {activeMarkup}
       <div className="lcd-dropdown__options">
         <ul className="lcd-dropdown__list">{listItemsMarkup}</ul>

@@ -95,7 +95,7 @@ export const Presets = ({
         </div>
         <div className="presets__control-group">
           <button className="lcd-button lcd-button--icon" onClick={onPresetAdd}>
-            <PlusIcon className="icon" />
+            <PlusIcon className="icon icon--small" />
           </button>
           <button
             className="lcd-button lcd-button--icon"

@@ -61,7 +61,6 @@ a:focus {
 
 .synth__controls {
   display: flex;
-  flex-wrap: wrap;
   justify-content: flex-start;
   gap: 1rem;
 }
@@ -640,6 +639,7 @@ input[type='range']::-ms-track {
   height: 6.2rem;
   margin: 2rem 4rem;
   display: block;
+  position: relative;
 }
 
 .cicada {
@@ -647,6 +647,7 @@ input[type='range']::-ms-track {
   height: 6rem;
   margin: 2rem 4rem;
   display: block;
+  position: relative;
 }
 
 .visually-hidden:not(:focus):not(:active) {
@@ -831,6 +832,8 @@ input[type='range']::-ms-track {
 
 .settings-panel--bottom {
   margin-top: 1.2rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .lcd-input {
@@ -915,11 +918,10 @@ input[type='range']::-ms-track {
 
 .lcd-button {
   font-family: var(--font-family-mono);
-  flex: 1 1 auto;
   margin: 0;
   padding: 0;
   border-radius: 0.6rem;
-  border: 0.2rem solid var(--green);
+  border: 0.1rem solid var(--green);
   background: transparent;
   color: var(--green);
   display: flex;
@@ -1066,6 +1068,11 @@ input[type='range']::-ms-track {
 .icon {
   display: block;
   height: 1.4rem;
+}
+
+.icon--small {
+  width: 1rem;
+  height: 1rem;
 }
 
 .icon--flip {
