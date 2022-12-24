@@ -5,7 +5,7 @@ const logScale = (options) => {
   const minpos = options.minpos || 0;
   const maxpos = options.maxpos || 100;
 
-  const minval = Math.log(options.minval || 1);
+  const minval = Math.log(options.minval || 0.001);
   const maxval = Math.log(options.maxval || 9000);
 
   const scale = (maxval - minval) / (maxpos - minpos);
@@ -55,7 +55,8 @@ export function RangeSlider({
         delta < 0
           ? event.target.valueAsNumber + step
           : event.target.valueAsNumber - step;
-      onChange(newValue);
+      const scaledValue = scaleFunction.value(newValue);
+      onChange(scaledValue);
       event.stopPropagation();
       event.preventDefault();
     };

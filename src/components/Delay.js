@@ -17,7 +17,7 @@ export function Delay({title, delay, onChange}) {
         <RangeSlider
           min="0"
           max="1"
-          step="0.1"
+          step={0.05}
           value={delay.time}
           onChange={(value) => handleChange('time', value)}
           vertical
@@ -28,7 +28,7 @@ export function Delay({title, delay, onChange}) {
         <RangeSlider
           min="0"
           max="1"
-          step="0.1"
+          step={0.05}
           value={delay.feedback}
           onChange={(value) => handleChange('feedback', value)}
           vertical

@@ -1,11 +1,20 @@
 import classnames from 'classnames';
 import {ArrowIcon} from '../icons';
 
-export const Select = ({wide, children, ...rest}) => {
+export const Select = ({wide, children, onChange, ...rest}) => {
   const selectClassNames = classnames('lcd-select', {'lcd-select--wide': wide});
+  const handleChange = (event) => {
+    onChange(event);
+
+    const synthNode = document.getElementById('synth');
+    if (synthNode) {
+      synthNode.focus();
+    }
+  };
+
   return (
     <div className={selectClassNames}>
-      <select className="lcd-select__control" {...rest}>
+      <select className="lcd-select__control" onChange={handleChange} {...rest}>
         {children}
       </select>
       <div className="lcd-select__icon">

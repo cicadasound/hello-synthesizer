@@ -495,6 +495,11 @@ export const Synth = () => {
     setControl(newControl);
   };
 
+  const toggleArp = () => {
+    const newControl = {...control, arp: !control.arp};
+    handleControlChange(newControl);
+  };
+
   const handleAmpChange = (newAmp) => {
     if (mainGainRef.current.gain.value !== newAmp.level) {
       mainGainRef.current.gain.value = newAmp.level;
@@ -572,6 +577,8 @@ export const Synth = () => {
     } else if (key === 'M' && event.shiftKey) {
       setSettingsVisible(!settingsVisible);
       return;
+    } else if (key === ' ') {
+      toggleArp();
     } else if (key === 's' && event.metaKey) {
       event.preventDefault();
       savePreset();

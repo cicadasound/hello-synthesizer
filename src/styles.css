@@ -10,6 +10,7 @@
   --purple: #ad6dfe;
   --green: #46c278;
 
+  --font-family-mono: 'IBM Plex Mono', monospace;
   --inner-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.5);
   --lcd-focus-shadow: 0 0 0.2rem 0.2rem var(--green);
   --border-color: var(--grey-200);
@@ -661,7 +662,7 @@ input[type='range']::-ms-track {
 /** Screen **/
 
 .screen {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-family-mono);
   color: var(--green);
   background-color: var(--grey-700);
   border: 0.1rem solid var(--green);
@@ -856,7 +857,7 @@ input[type='range']::-ms-track {
 }
 
 .lcd-select__control {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-family-mono);
   min-width: 0;
   margin: 0;
   border: 0;
@@ -892,8 +893,12 @@ input[type='range']::-ms-track {
   height: 100%;
 }
 
+.lcd-select option {
+  font-family: var(--font-family-mono);
+}
+
 .lcd-text-field {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-family-mono);
   flex: 0 1 auto;
   width: 26rem;
   margin: 0;
@@ -908,7 +913,7 @@ input[type='range']::-ms-track {
 }
 
 .lcd-button {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-family-mono);
   flex: 1 1 auto;
   margin: 0;
   padding: 0;
