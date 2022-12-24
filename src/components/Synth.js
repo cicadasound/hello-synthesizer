@@ -1,5 +1,10 @@
 import React, {useEffect, useState, useRef} from 'react';
 import classnames from 'classnames';
+const {
+  uniqueNamesGenerator,
+  adjectives,
+  animals,
+} = require('unique-names-generator');
 
 import {Analyser} from './Analyser';
 import {AudioSettings} from './AudioSettings';
@@ -162,9 +167,16 @@ export const Synth = () => {
   };
 
   const handlePresetAdd = () => {
+    const randomName = uniqueNamesGenerator({
+      dictionaries: [adjectives, animals],
+      length: 2,
+      separator: ' ',
+      style: 'capital',
+    });
+
     const presetSettings = {
       id: presets.length + 1,
-      name: 'init',
+      name: randomName,
       lfo,
       osc1,
       osc2,
@@ -176,6 +188,7 @@ export const Synth = () => {
     };
 
     const newPresets = [...presets, presetSettings];
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newPresets));
     setPresets(newPresets);
     handlePresetChange(presetSettings);
   };

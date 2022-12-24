@@ -26,7 +26,6 @@ export const Presets = ({
   const uploadRef = useRef(null);
 
   const handlePresetChange = (value) => {
-    console.log(value);
     const newPreset = presets.find((preset) => `${preset.id}` === `${value}`);
     if (newPreset) {
       onPresetChange(newPreset);

@@ -23,9 +23,18 @@ export const Dropdown = ({
         setListVisible(false);
       }
     };
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setListVisible(false);
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
     };
   }, [dropdownRef]);
 
@@ -82,7 +91,7 @@ export const Dropdown = ({
         <span className="lcd-dropdown__id">
           {activeOption.id.toString().padStart(2, '0')}
         </span>
-        <span>
+        <span className="lcd-dropdown__name">
           {activeOption.label} {dirty && '*'}
         </span>
       </div>
@@ -127,8 +136,10 @@ export const Dropdown = ({
           className="lcd-option__control"
           value={id}
         >
-          <span>{id.toString().padStart(2, '0')}</span>
-          <span>{label}</span>
+          <span className="lcd-option__id">
+            {id.toString().padStart(2, '0')}
+          </span>
+          <span className="lcd-option__name">{label}</span>
         </button>
       );
     return (
