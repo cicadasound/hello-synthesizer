@@ -781,24 +781,32 @@ export const Synth = () => {
       <div className="synth__controls">
         <Control
           control={control}
-          title="CONTROL"
+          title="Control"
           onChange={handleControlChange}
           poweredOn={poweredOn}
           onPowerChange={handlePowerChange}
         />
-        <LFO title="LFO" lfo={lfo} onChange={handleLFOChange} />
+        <LFO title="Modulation" lfo={lfo} onChange={handleLFOChange} />
       </div>
       <div className="synth__controls">
-        <Oscillator title="OSC1" osc={osc1} onChange={handleOsc1Change} />
-        <Oscillator title="OSC2" osc={osc2} onChange={handleOsc2Change} />
-        <Amp title="AMP" amp={amp} onChange={handleAmpChange} />
-        <Filter title="FILTER" filter={filter} onChange={handleFilterChange} />
+        <Oscillator
+          title="Oscillator 1"
+          osc={osc1}
+          onChange={handleOsc1Change}
+        />
+        <Oscillator
+          title="Oscillator 2"
+          osc={osc2}
+          onChange={handleOsc2Change}
+        />
+        <Amp title="Amp" amp={amp} onChange={handleAmpChange} />
+        <Filter title="Filter" filter={filter} onChange={handleFilterChange} />
         <Envelope
-          title="ENV"
+          title="Envelope"
           envelope={envelope}
           onChange={handleEnvelopeChange}
         />
-        <Delay title="DELAY" delay={delay} onChange={handleDelayChange} />
+        <Delay title="Delay" delay={delay} onChange={handleDelayChange} />
       </div>
       <Keyboard
         pressedKeys={pressedKeys}

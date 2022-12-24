@@ -13,7 +13,7 @@ export function Filter({title, filter, onChange}) {
   return (
     <Module title={title}>
       <div className="control">
-        <label>FREQ</label>
+        <label>Cutoff</label>
         <RangeSlider
           vertical
           min={20}
@@ -27,7 +27,7 @@ export function Filter({title, filter, onChange}) {
         />
       </div>
       <div className="control">
-        <label>RES</label>
+        <label>Res</label>
         <RangeSlider
           vertical
           min="0"

@@ -13,7 +13,7 @@ export function Delay({title, delay, onChange}) {
   return (
     <Module title={title}>
       <div className="control">
-        <label>TIME</label>
+        <label>Time</label>
         <RangeSlider
           min="0"
           max="1"
@@ -24,7 +24,7 @@ export function Delay({title, delay, onChange}) {
         />
       </div>
       <div className="control">
-        <label>FDBK</label>
+        <label>Feedback</label>
         <RangeSlider
           min="0"
           max="1"

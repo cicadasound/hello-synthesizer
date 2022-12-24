@@ -49,7 +49,7 @@ export function LFO({title, lfo, onChange}) {
   return (
     <Module title={title}>
       <div className="control">
-        <label>AMT</label>
+        <label>Amount</label>
         <RangeSlider
           min={0}
           max={1000}
@@ -80,7 +80,7 @@ export function LFO({title, lfo, onChange}) {
         </div>
       </div>
       <div className="control">
-        <label>FRQ</label>
+        <label>Rate</label>
         <RangeSlider
           min={0}
           max={100}

@@ -62,7 +62,7 @@ export function Oscillator({title, osc, onChange}) {
   return (
     <Module title={title} vertical>
       <div className="control">
-        <label className="visually-hidden">WAVE</label>
+        <label className="visually-hidden">Waveform</label>
         <ToggleGroup
           options={waveOptions}
           selected={osc.type}
@@ -70,7 +70,7 @@ export function Oscillator({title, osc, onChange}) {
         />
       </div>
       <div className="control">
-        <label className="visually-hidden">OCT</label>
+        <label className="visually-hidden">Octave</label>
         <ToggleGroup
           options={octaveOptions}
           selected={osc.octave}
@@ -78,7 +78,7 @@ export function Oscillator({title, osc, onChange}) {
         />
       </div>
       <div className="control">
-        <label>DETUNE</label>
+        <label>Detune</label>
         <RangeSlider
           min="-1200"
           max="1200"
