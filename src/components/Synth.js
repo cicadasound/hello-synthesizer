@@ -403,7 +403,12 @@ export const Synth = () => {
     oscillator1.connect(vca);
     oscillator2.connect(vca);
     vca.connect(filterRef.current);
-    voicesRef.current[note.name] = {vca};
+    voicesRef.current[note.name] = {
+      vca,
+      osc1: oscillator1,
+      osc2: oscillator2,
+      baseFrequency: frequency,
+    };
   };
 
   const destroyOscillator = (note) => {
@@ -447,11 +452,39 @@ export const Synth = () => {
     setLFO(newLFO);
   };
 
+  const handleOscChange = (newOsc, oldOsc, oscKey) => {
+    if (newOsc.detune !== oldOsc.detune) {
+      Object.keys(voicesRef.current).forEach((key) => {
+        voicesRef.current[key][oscKey].detune.setValueAtTime(
+          newOsc.detune,
+          audioContextRef.current.currentTime
+        );
+      });
+    }
+    if (newOsc.octave !== oldOsc.octave) {
+      Object.keys(voicesRef.current).forEach((key) => {
+        const frequency = voicesRef.current[key].baseFrequency;
+        voicesRef.current[key][oscKey].frequency.setValueAtTime(
+          frequency * newOsc.octave,
+          audioContextRef.current.currentTime
+        );
+      });
+    }
+    if (newOsc.type !== oldOsc.type) {
+      Object.keys(voicesRef.current).forEach((key) => {
+        const frequency = voicesRef.current[key].baseFrequency;
+        voicesRef.current[key][oscKey].type = newOsc.type;
+      });
+    }
+  };
+
   const handleOsc1Change = (newOsc) => {
+    handleOscChange(newOsc, osc1, 'osc1');
     setOsc1(newOsc);
   };
 
   const handleOsc2Change = (newOsc) => {
+    handleOscChange(newOsc, osc2, 'osc2');
     setOsc2(newOsc);
   };
 

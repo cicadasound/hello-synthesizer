@@ -80,9 +80,9 @@ export function Oscillator({title, osc, onChange}) {
       <div className="control">
         <label>DETUNE</label>
         <RangeSlider
-          min="-120"
-          max="120"
-          step="1"
+          min="-1200"
+          max="1200"
+          step="10"
           value={osc.detune}
           highlightCentre
           onChange={(value) => handleChange('detune', value)}
