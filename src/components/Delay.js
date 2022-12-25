@@ -24,7 +24,7 @@ export function Delay({title, delay, onChange}) {
         />
       </div>
       <div className="control">
-        <label>Feedback</label>
+        <label>Level</label>
         <RangeSlider
           min="0"
           max="1"
