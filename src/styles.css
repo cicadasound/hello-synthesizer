@@ -56,6 +56,7 @@ html {
 }
 
 body {
+  touch-action: pan-x pan-y;
   color: var(--text-color);
   background-color: var(--main-background);
   font-family: var(--font-family-mono);
@@ -63,6 +64,22 @@ body {
   margin: 0;
   padding: 0;
   font-size: 1.6rem;
+  height: 100vh;
+  width: 100vw;
+}
+
+@media (max-height: 760px) {
+  body {
+    transform: scale(0.8);
+    overflow: hidden;
+  }
+}
+
+@media (min-height: 761px) and (max-height: 900px) {
+  body {
+    transform: scale(0.95);
+    overflow: hidden;
+  }
 }
 
 a:focus {
@@ -196,6 +213,7 @@ a:focus {
   justify-content: flex-end;
   user-select: none;
   transition: var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .key + .key {
@@ -377,6 +395,7 @@ a:focus {
   background: transparent;
   transform: translateX(0);
   width: 17.6rem;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .range-container--vertical input[type='range'] {
@@ -454,6 +473,7 @@ input[type='range']::-webkit-slider-thumb {
   box-shadow: var(--range-thumb-shadow);
   cursor: pointer;
   margin-top: var(--range-thumb-offset);
+  -webkit-tap-highlight-color: transparent;
 }
 
 input[type='range']:focus::-webkit-slider-thumb {
@@ -499,6 +519,7 @@ input[type='range']::-webkit-slider-runnable-track {
   cursor: pointer;
   background: var(--range-track-background);
   position: relative;
+  -webkit-tap-highlight-color: transparent;
   top: var(--range-track-offset);
 }
 
@@ -556,6 +577,7 @@ input[type='range']::-ms-track {
 .toggle__control {
   font-family: var(--font-family-mono);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   width: 4rem;
   height: 2rem;
   display: flex;
@@ -606,6 +628,7 @@ input[type='range']::-ms-track {
 
 .toggle-group__toggle {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   font-family: var(--font-family-mono);
   padding: 0 0.4rem;
   display: flex;
@@ -904,6 +927,7 @@ input[type='range']::-ms-track {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   appearance: none;
 }
 
@@ -963,6 +987,7 @@ input[type='range']::-ms-track {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .lcd-button:focus {
@@ -1050,6 +1075,7 @@ input[type='range']::-ms-track {
   justify-content: flex-start;
   align-items: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .lcd-dropdown__control:focus {
@@ -1088,6 +1114,7 @@ input[type='range']::-ms-track {
   background: 0;
   color: var(--green);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .lcd-option__action:focus {
@@ -1112,6 +1139,7 @@ input[type='range']::-ms-track {
   justify-content: flex-start;
   align-items: center;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   display: flex;
   gap: 1rem;
 }
