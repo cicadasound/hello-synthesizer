@@ -13,22 +13,22 @@ export function Delay({title, delay, onChange}) {
   return (
     <Module title={title}>
       <div className="control">
-        <label>TIME</label>
+        <label>Time</label>
         <RangeSlider
           min="0"
           max="1"
-          step="0.1"
+          step={0.05}
           value={delay.time}
           onChange={(value) => handleChange('time', value)}
           vertical
         />
       </div>
       <div className="control">
-        <label>FDBK</label>
+        <label>Level</label>
         <RangeSlider
           min="0"
           max="1"
-          step="0.1"
+          step={0.05}
           value={delay.feedback}
           onChange={(value) => handleChange('feedback', value)}
           vertical

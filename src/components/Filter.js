@@ -13,18 +13,21 @@ export function Filter({title, filter, onChange}) {
   return (
     <Module title={title}>
       <div className="control">
-        <label>FREQ</label>
+        <label>Cutoff</label>
         <RangeSlider
           vertical
-          min="0"
-          max="5000"
-          step="100"
+          min={20}
+          max={20000}
+          minpos={0}
+          maxpos={100}
+          step={1}
+          scale="log"
           value={filter.frequency}
           onChange={(value) => handleChange('frequency', value)}
         />
       </div>
       <div className="control">
-        <label>RES</label>
+        <label>Res</label>
         <RangeSlider
           vertical
           min="0"

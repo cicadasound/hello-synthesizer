@@ -15,9 +15,15 @@ export function Control({control, title, onChange, poweredOn, onPowerChange}) {
 
   return (
     <Module title={title}>
-      <Toggle label="POWER" onChange={onPowerChange} active={poweredOn} primary icon={<PowerIcon />} />
+      <Toggle
+        label="Power"
+        onChange={onPowerChange}
+        active={poweredOn}
+        primary
+        icon={<PowerIcon />}
+      />
       <div className="control">
-        <label>SPEED</label>
+        <label>Speed</label>
         <RangeSlider
           min="20"
           max="240"
@@ -28,12 +34,12 @@ export function Control({control, title, onChange, poweredOn, onPowerChange}) {
       </div>
       <section className="toggle-group">
         <Toggle
-          label="LATCH"
+          label="Latch"
           onChange={() => handleChange('latch', !control.latch)}
           active={control.latch}
         />
         <Toggle
-          label="ARP"
+          label="Arp"
           onChange={() => handleChange('arp', !control.arp)}
           active={control.arp}
         />

@@ -1,3 +1,23 @@
+@font-face {
+  font-family: 'InputMono';
+  src: local('InputMono'), url('./fonts/InputMono-Light.ttf') format('truetype');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'InputMono';
+  src: local('InputMono'),
+    url('./fonts/InputMono-Regular.ttf') format('truetype');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'InputMono';
+  src: local('InputMono'),
+    url('./fonts/InputMono-Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+
 :root {
   --black: #000;
   --white: #fff;
@@ -8,29 +28,60 @@
   --grey-700: #222222;
   --tangerine: #fd8c31;
   --purple: #ad6dfe;
-  --green: #08fd75;
+  --green: #46c278;
 
+  --font-family-mono: 'InputMono', monospace;
   --inner-shadow: inset 0 0.1rem 0 rgba(255, 255, 255, 0.5);
+  --lcd-focus-shadow: 0 0 0.2rem 0.2rem var(--green);
+  --lcd-bottom-focus-shadow: 0 0.2rem 0.1rem -0.1rem var(--green);
   --border-color: var(--grey-200);
   --active-border-color: var(--tangerine);
   --text-color: var(--black);
   --main-background: var(--grey-600);
+  --transition-default: all 200ms ease-in-out;
+  --transition-fast: all 140ms ease-in-out;
 }
 
 html {
   margin: 0;
   padding: 0;
   font-size: 62.5%;
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
 
 body {
+  touch-action: pan-x pan-y;
   color: var(--text-color);
   background-color: var(--main-background);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-family-mono);
   font-weight: 600;
   margin: 0;
   padding: 0;
   font-size: 1.6rem;
+}
+
+@media (max-height: 760px) {
+  html {
+    font-size: 56%;
+  }
+  body {
+    overflow: hidden;
+  }
+}
+
+@media (min-height: 761px) and (max-height: 874px) {
+  html {
+    font-size: 60%;
+  }
+  body {
+    overflow: hidden;
+  }
 }
 
 a:focus {
@@ -52,7 +103,6 @@ a:focus {
 
 .synth__controls {
   display: flex;
-  flex-wrap: wrap;
   justify-content: flex-start;
   gap: 1rem;
 }
@@ -87,6 +137,7 @@ a:focus {
   gap: 1rem;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 
 .module__group--vertical {
@@ -124,7 +175,6 @@ a:focus {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  width: 100%;
 }
 
 .control__field {
@@ -134,7 +184,6 @@ a:focus {
 
 .control label {
   font-size: 0.9rem;
-  text-transform: uppercase;
   text-align: center;
   margin: 0;
   margin-bottom: 0.8rem;
@@ -153,6 +202,7 @@ a:focus {
 }
 
 .key {
+  font-family: var(--font-family-mono);
   color: var(--border-color);
   background: var(--grey-600);
   border: 0.1rem solid var(--border-color);
@@ -163,9 +213,17 @@ a:focus {
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  margin-left: -0.2rem;
   user-select: none;
-  transition: all 200ms ease-out;
+  transition: var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key + .key {
+  margin-left: -0.3rem;
+}
+
+.key + .key--black {
+  margin-left: -5.2rem;
 }
 
 .key:first-of-type {
@@ -186,7 +244,6 @@ a:focus {
   height: 10rem;
   padding: 0;
   transform: translate(50%, 0);
-  margin-left: -5.2rem;
 }
 
 .key--active {
@@ -206,14 +263,14 @@ a:focus {
   content: '';
   border: 0.1rem solid var(--border-color);
   border-radius: 0.3rem;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.8rem;
+  height: 2.8rem;
   position: absolute;
   bottom: -0.4rem;
   left: -0.1rem;
   z-index: -1;
   pointer-events: none;
-  transition: all 140ms ease-out;
+  transition: var(--transition-fast);
 }
 
 .key__keyboard-key {
@@ -224,12 +281,11 @@ a:focus {
   background: var(--main-background);
   border: 0.1rem solid var(--border-color);
   border-radius: 0.3rem;
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.8rem;
+  height: 2.8rem;
   margin-top: 2rem;
   margin-bottom: 1.6rem;
   pointer-events: none;
-  transition: all 140ms ease-out;
 }
 
 .key__keyboard-key-cap {
@@ -245,6 +301,10 @@ a:focus {
   justify-content: center;
   align-items: center;
   background: var(--main-background);
+}
+
+.key--active .key__keyboard-key-cap {
+  color: var(--tangerine);
 }
 
 .key--active .key__keyboard-key,
@@ -264,6 +324,7 @@ a:focus {
 
 .key--current .key__keyboard-key-cap {
   background-color: var(--tangerine);
+  color: var(--white);
 }
 
 @media (min-width: 481px) and (max-width: 700px) {
@@ -295,10 +356,12 @@ a:focus {
   position: relative;
   margin-top: 0.4rem;
   margin-bottom: 1.6rem;
+  width: 18rem;
 }
 
 .range-container--vertical {
   margin-top: 0;
+  width: auto;
 }
 
 .range-container::before {
@@ -333,10 +396,11 @@ a:focus {
   outline: none;
   background: transparent;
   transform: translateX(0);
-  width: 18rem;
+  width: 17.6rem;
+  -webkit-tap-highlight-color: transparent;
 }
 
-input[type='range'][orient='vertical'] {
+.range-container--vertical input[type='range'] {
   transform: rotate(270deg);
   width: 14rem;
   height: 14rem;
@@ -411,6 +475,7 @@ input[type='range']::-webkit-slider-thumb {
   box-shadow: var(--range-thumb-shadow);
   cursor: pointer;
   margin-top: var(--range-thumb-offset);
+  -webkit-tap-highlight-color: transparent;
 }
 
 input[type='range']:focus::-webkit-slider-thumb {
@@ -426,6 +491,7 @@ input[type='range']::-moz-range-thumb {
   background: var(--range-thumb-background);
   box-shadow: var(--range-thumb-shadow);
   cursor: pointer;
+  transform: translateY(0.5rem);
 }
 
 /* All the same stuff for IE */
@@ -439,10 +505,14 @@ input[type='range']::-ms-thumb {
   cursor: pointer;
 }
 
-input[type='range'][orient='vertical']::-webkit-slider-thumb,
-input[type='range'][orient='vertical']::-moz-range-thumb,
-input[type='range'][orient='vertical']::-ms-thumb {
+.range-container--vertical input[type='range']::-webkit-slider-thumb,
+.range-container--vertical input[type='range']::-moz-range-thumb,
+.range-container--vertical input[type='range']::-ms-thumb {
   box-shadow: var(--range-thumb-shadow-vertical);
+}
+
+.range-container--vertical input[type='range']::-moz-range-thumb {
+  transform: translateY(0);
 }
 
 input[type='range']::-webkit-slider-runnable-track {
@@ -451,6 +521,7 @@ input[type='range']::-webkit-slider-runnable-track {
   cursor: pointer;
   background: var(--range-track-background);
   position: relative;
+  -webkit-tap-highlight-color: transparent;
   top: var(--range-track-offset);
 }
 
@@ -480,31 +551,6 @@ input[type='range']::-ms-track {
   top: var(--range-track-offset);
 }
 
-.analyser {
-  width: 60rem;
-  max-width: 100%;
-  height: 10rem;
-  position: relative;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.analyser__canvas {
-  opacity: 0;
-  height: 100%;
-  width: calc(100% + 2.4rem);
-  position: absolute;
-  left: -1.2rem;
-  right: -1.2rem;
-  user-select: none;
-  -webkit-user-select: none;
-  transition: opacity 200ms ease-in-out;
-}
-
-.analyser__canvas--visible {
-  opacity: 1;
-}
-
 .toggle {
   display: flex;
   flex-direction: column;
@@ -513,17 +559,12 @@ input[type='range']::-ms-track {
   align-items: center;
 }
 
-.toggle--icon {
-  width: 3.6rem;
-  height: 3.6rem;
-}
-
 .toggle--icon svg {
   width: 2rem;
   height: 2rem;
   display: block;
   color: rgba(255, 255, 255, 0.5);
-  transition: color 180ms ease-in-out;
+  transition: var(--transition-default);
 }
 
 .toggle--icon.toggle--active svg {
@@ -536,7 +577,9 @@ input[type='range']::-ms-track {
 }
 
 .toggle__control {
+  font-family: var(--font-family-mono);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   width: 4rem;
   height: 2rem;
   display: flex;
@@ -548,7 +591,7 @@ input[type='range']::-ms-track {
   box-shadow: inset 0px 0.1rem 0 rgba(255, 255, 255, 0.5);
   border-radius: 0.3rem;
   flex: 1 1 auto;
-  transition: background-color 160ms ease-out;
+  transition: var(--transition-default);
 }
 
 .toggle__control:focus {
@@ -565,6 +608,8 @@ input[type='range']::-ms-track {
 .toggle--primary .toggle__control,
 .synth--disabled .toggle--primary .toggle__control {
   background-color: var(--purple);
+  width: 3.2rem;
+  height: 3.2rem;
 }
 
 .synth--disabled .toggle__control {
@@ -585,6 +630,8 @@ input[type='range']::-ms-track {
 
 .toggle-group__toggle {
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font-family-mono);
   padding: 0 0.4rem;
   display: flex;
   justify-content: center;
@@ -595,7 +642,7 @@ input[type='range']::-ms-track {
   box-shadow: inset 0px 0.1rem 0 rgba(255, 255, 255, 0.5);
   border-radius: 0.3rem;
   flex: 1 1 auto;
-  transition: all 200ms ease-out;
+  transition: var(--transition-default);
 }
 
 .toggle-group__toggle:focus {
@@ -650,6 +697,7 @@ input[type='range']::-ms-track {
   height: 6.2rem;
   margin: 2rem 4rem;
   display: block;
+  position: relative;
 }
 
 .cicada {
@@ -657,6 +705,7 @@ input[type='range']::-ms-track {
   height: 6rem;
   margin: 2rem 4rem;
   display: block;
+  position: relative;
 }
 
 .visually-hidden:not(:focus):not(:active) {
@@ -667,4 +716,474 @@ input[type='range']::-ms-track {
   position: absolute;
   white-space: nowrap;
   width: 1px;
+}
+
+/** Screen **/
+
+.screen {
+  font-family: var(--font-family-mono);
+  color: var(--green);
+  background-color: var(--grey-700);
+  border: 0.1rem solid var(--green);
+  border-radius: 0.8rem;
+  height: 100%;
+}
+
+.screen__top {
+  border-bottom: 0.1rem solid var(--green);
+}
+
+.screen__bottom {
+  padding: 0;
+}
+
+.screen__button {
+  border-radius: 0.3rem;
+  border: 0.1rem solid var(--green);
+}
+
+/* entire container, keeps perspective */
+.flip-panel {
+  perspective: 1000px;
+  z-index: 2;
+  --flip-panel-height: 17rem;
+  --flip-panel-width: 60rem;
+}
+
+.flip-panel,
+.flip-panel__front,
+.flip-panel__back {
+  width: var(--flip-panel-width);
+  height: var(--flip-panel-height);
+}
+
+/* flip speed goes here */
+.flip-panel__flipper {
+  transition: 0.6s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+/* hide back of pane during swap */
+.flip-panel__front,
+.flip-panel__back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* front pane, placed above back */
+.flip-panel__front {
+  z-index: 1;
+}
+
+/* back, initially hidden pane */
+.flip-panel__back {
+  transform: rotateX(-180deg);
+  animation: toFront 0.3s linear normal forwards;
+  height: 16.9rem;
+}
+.vertical.flip-panel {
+  position: relative;
+}
+.vertical.flip-panel--flipped .flip-panel__back {
+  animation-delay: 0.3s;
+  animation: toBack 0.3s linear normal forwards;
+}
+
+@keyframes toBack {
+  0% {
+    z-index: 0;
+  }
+  100% {
+    z-index: 1;
+  }
+}
+@keyframes toFront {
+  0% {
+    z-index: 1;
+  }
+  100% {
+    z-index: 0;
+  }
+}
+.vertical.flip-panel .flip-panel__flipper {
+  transform-origin: 100% calc(var(--flip-panel-height) / 2);
+}
+
+.vertical.flip-panel--flipped .flip-panel__flipper {
+  transform: rotateX(-180deg);
+}
+
+.analyser {
+  width: 60rem;
+  max-width: 100%;
+  height: 10rem;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.analyser__canvas {
+  opacity: 0;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: var(--transition-default);
+  border-radius: 0.8rem;
+  overflow: hidden;
+}
+
+.analyser__canvas--visible {
+  opacity: 1;
+}
+
+.presets {
+  display: flex;
+}
+
+.presets__selector {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex: 1 1 auto;
+  padding: 1.6rem;
+  min-width: 0;
+}
+
+.presets__controls {
+  display: flex;
+  align-items: center;
+}
+
+.presets__control-group {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  padding: 1.8rem 2rem;
+}
+
+.presets__control-group + .presets__control-group {
+  border-left: 0.1rem solid var(--green);
+}
+
+.selected-preset {
+  flex: 0 0 12rem;
+  text-align: left;
+}
+
+.selected-preset__index {
+  font-size: 1rem;
+}
+
+.selected-preset__name {
+  font-size: 1.6rem;
+}
+
+.settings-panel {
+  padding: 1rem 2rem;
+}
+
+.settings-panel--bottom {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.lcd-input {
+  display: flex;
+  align-items: center;
+}
+
+.lcd-input__label {
+  flex: 1 1 22rem;
+  text-align: left;
+  font-size: 2rem;
+}
+
+.lcd-select {
+  display: flex;
+  width: 26rem;
+  flex: 0 1 auto;
+  position: relative;
+}
+
+.lcd-select__control {
+  font-family: var(--font-family-mono);
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  width: 100%;
+  padding: 0.1rem 3rem 0.1rem 1rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 0.2rem solid transparent;
+  border-radius: 0.8rem;
+  color: var(--green);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  appearance: none;
+}
+
+.lcd-select--wide {
+  width: 36rem;
+}
+
+.lcd-select__control:focus {
+  outline: 0;
+  box-shadow: var(--lcd-focus-shadow);
+}
+
+.lcd-select__icon {
+  position: absolute;
+  top: 0;
+  right: 1.4rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.lcd-select option {
+  font-family: var(--font-family-mono);
+}
+
+.lcd-text-field {
+  font-family: var(--font-family-mono);
+  flex: 1 1 auto;
+  width: 18em;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0.2rem 1.2rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 0.2rem solid transparent;
+  border-bottom-color: var(--green);
+  border-radius: 0;
+  color: var(--green);
+}
+
+.lcd-text-field:focus {
+  outline: 0;
+  box-shadow: var(--lcd-bottom-focus-shadow);
+}
+
+.lcd-button {
+  font-family: var(--font-family-mono);
+  margin: 0;
+  padding: 0;
+  border-radius: 0.6rem;
+  border: 0.1rem solid var(--green);
+  background: transparent;
+  color: var(--green);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lcd-button:focus {
+  outline: 0;
+  box-shadow: var(--lcd-focus-shadow);
+}
+
+.lcd-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.lcd-button:not(.lcd-button--icon) {
+  padding: 0.8rem 1.4rem;
+}
+
+.lcd-button--icon {
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 3rem;
+}
+
+.lcd-button svg {
+  display: block;
+}
+
+.lcd-dropdown {
+  display: flex;
+  flex: 1 1 26rem;
+  position: relative;
+  min-width: 0;
+}
+
+.lcd-dropdown__options {
+  display: none;
+  position: absolute;
+  top: calc(100% + 2.6rem);
+  background: var(--grey-700);
+  border: 0.1rem solid var(--green);
+  border-radius: 0.8rem;
+  left: 0;
+  width: 100%;
+  z-index: 99;
+  padding: 1rem;
+}
+
+.lcd-dropdown--active .lcd-dropdown__options {
+  display: block;
+}
+
+.lcd-dropdown__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.lcd-dropdown__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lcd-dropdown__list li {
+  margin: 0;
+  padding: 0;
+}
+
+.lcd-dropdown__control {
+  font-family: var(--font-family-mono);
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  flex: 1 1 100%;
+  padding: 0.1rem 1rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 0.2rem solid transparent;
+  border-radius: 0.8rem;
+  color: var(--green);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lcd-dropdown__control:focus {
+  outline: 0;
+  border-radius: 0;
+  box-shadow: var(--lcd-bottom-focus-shadow);
+}
+
+.lcd-dropdown__label {
+  flex: 1 1 100%;
+  display: flex;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.lcd-dropdown .lcd-select__icon {
+  position: absolute;
+  top: 0;
+  right: 1.4rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.lcd-option {
+  display: flex;
+}
+
+.lcd-option__actions {
+  display: flex;
+  max-width: 100%;
+}
+
+.lcd-option__action {
+  border: 0;
+  background: 0;
+  color: var(--green);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lcd-option__action:focus {
+  outline: 0;
+  border-radius: 0.4rem;
+  box-shadow: var(--lcd-focus-shadow);
+}
+
+.lcd-option__control {
+  font-family: var(--font-family-mono);
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  width: 100%;
+  padding: 0.1rem 3rem 0.1rem 1rem;
+  font-size: 2rem;
+  background: transparent;
+  border: 0.2rem solid transparent;
+  border-radius: 0.8rem;
+  color: var(--green);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  display: flex;
+  gap: 1rem;
+}
+
+.lcd-option__control:focus {
+  outline: 0;
+  border-radius: 0.4rem;
+  box-shadow: var(--lcd-focus-shadow);
+}
+
+.lcd-option__name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-input {
+  display: none;
+}
+
+.icon {
+  display: block;
+  height: 1.4rem;
+}
+
+.icon--small {
+  width: 1rem;
+  height: 1rem;
+}
+
+.icon--flip {
+  transform: scaleX(-1);
+}
+
+.icon--rotate-90 {
+  transform: rotate(90deg);
+}
+
+.icon--rotate-180 {
+  transform: rotate(180deg);
+}
+
+.icon--rotate-270 {
+  transform: rotate(270deg);
 }

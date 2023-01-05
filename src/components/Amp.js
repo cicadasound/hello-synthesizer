@@ -13,7 +13,7 @@ export function Amp({title, amp, onChange}) {
   return (
     <Module title={title} vertical>
       <div className="control">
-        <label>LEVEL</label>
+        <label>Level</label>
         <RangeSlider
           vertical
           min="0"

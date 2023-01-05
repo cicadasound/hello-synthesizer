@@ -1,8 +1,51 @@
 import React, {useRef, useEffect} from 'react';
 import classnames from 'classnames';
 
-export function RangeSlider({value, onChange, vertical, highlightCentre, ...rest}) {
+const logScale = (options) => {
+  const minpos = options.minpos || 0;
+  const maxpos = options.maxpos || 100;
+
+  const minval = Math.log(options.minval || 0.001);
+  const maxval = Math.log(options.maxval || 9000);
+
+  const scale = (maxval - minval) / (maxpos - minpos);
+
+  return {
+    value: (position) => {
+      return Math.exp((position - minpos) * scale + minval);
+    },
+    position: (value) => {
+      return minpos + (Math.log(value) - minval) / scale;
+    },
+  };
+};
+
+function linearScale() {
+  return {
+    value: (position) => position,
+    position: (value) => value,
+  };
+}
+
+export function RangeSlider({
+  value,
+  onChange,
+  vertical,
+  highlightCentre,
+  min,
+  max,
+  minpos,
+  maxpos,
+  step,
+  scale = 'linear',
+  ...rest
+}) {
   const sliderRef = useRef(null);
+
+  const scaleFunction =
+    scale === 'log'
+      ? logScale({minval: min, maxval: max, minpos: minpos, maxpos: maxpos})
+      : linearScale();
 
   useEffect(() => {
     const handleWheel = (event) => {
@@ -12,7 +55,8 @@ export function RangeSlider({value, onChange, vertical, highlightCentre, ...rest
         delta < 0
           ? event.target.valueAsNumber + step
           : event.target.valueAsNumber - step;
-      onChange(newValue);
+      const scaledValue = scaleFunction.value(newValue);
+      onChange(scaledValue);
       event.stopPropagation();
       event.preventDefault();
     };
@@ -21,16 +65,15 @@ export function RangeSlider({value, onChange, vertical, highlightCentre, ...rest
       sliderRef.current.addEventListener('wheel', handleWheel, {
         passive: false,
       });
-      return function cleanup() {
-        sliderRef.current.removeEventListener('wheel', handleWheel, {
-          passive: false,
-        });
+      return () => {
+        sliderRef.current.removeEventListener('wheel', handleWheel);
       };
     }
   }, []);
 
   const handleChange = (event) => {
-    onChange(event.target.valueAsNumber);
+    const scaledValue = scaleFunction.value(event.target.valueAsNumber);
+    onChange(scaledValue);
   };
 
   const className = classnames('range-container', {
@@ -76,8 +119,6 @@ export function RangeSlider({value, onChange, vertical, highlightCentre, ...rest
   const firstTicks = createTicks(false);
   const secondTicks = createTicks(true);
 
-  const orient = vertical ? {orient: 'vertical'} : {};
-
   return (
     <div className={className}>
       <svg role="presentation" className="range-ticks">
@@ -88,10 +129,12 @@ export function RangeSlider({value, onChange, vertical, highlightCentre, ...rest
       </svg>
       <input
         type="range"
-        {...orient}
-        className="range-container__input"
         {...rest}
-        value={value}
+        className="range-container__input"
+        min={minpos ? minpos : min}
+        max={maxpos ? maxpos : max}
+        step={step}
+        value={scaleFunction.position(value)}
         onChange={handleChange}
         ref={sliderRef}
       />
