@@ -34,12 +34,12 @@ export function Control({control, title, onChange, poweredOn, onPowerChange}) {
       </div>
       <section className="toggle-group">
         <Toggle
-          label="Latch"
+          label="HOLD"
           onChange={() => handleChange('latch', !control.latch)}
           active={control.latch}
         />
         <Toggle
-          label="Arp"
+          label="ARP"
           onChange={() => handleChange('arp', !control.arp)}
           active={control.arp}
         />
