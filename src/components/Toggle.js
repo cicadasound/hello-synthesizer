@@ -11,11 +11,10 @@ export function Toggle({label, active, primary, icon, onChange}) {
   const labelMarkup = !icon ? (
     <span className="toggle__label">{label}</span>
   ) : null;
-  const contentMarkup = icon ? icon : null;
+  const contentMarkup = icon ? icon : labelMarkup;
 
   return (
     <div className={toggleClasses}>
-      {labelMarkup}
       <button className="toggle__control" aria-label={label} onClick={onChange}>
         {contentMarkup}
       </button>
