@@ -1189,3 +1189,33 @@ input[type='range']::-ms-track {
 .icon--rotate-270 {
   transform: rotate(270deg);
 }
+
+/* Browser warning */
+.browser-warning {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-family: var(--font-family-mono);
+  margin-top: 1rem;
+  padding: 2rem;
+  border-radius: 0.6rem;
+  border: var(--border-width) solid var(--green);
+  background: transparent;
+  color: var(--green);
+  width: 100%;
+}
+
+/* Footer */
+
+.footer {
+  font-size: 0.8rem;
+  font-weight: 200;
+  color: white;
+}
+
+.footer a {
+  font-size: 0.8rem;
+  font-weight: 200;
+  color: white;
+}
