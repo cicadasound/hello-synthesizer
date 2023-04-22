@@ -83,6 +83,7 @@ export function Oscillator({title, osc, onChange}) {
           min="-1200"
           max="1200"
           step="10"
+          scale="exponential"
           value={osc.detune}
           highlightCentre
           onChange={(value) => handleChange('detune', value)}
