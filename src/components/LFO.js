@@ -52,11 +52,11 @@ export function LFO({title, lfo, onChange}) {
         <label>Amount</label>
         <RangeSlider
           min={0}
-          max={1000}
+          max={999}
           step={1}
           minpos={0}
-          maxpos={100}
-          scale="log"
+          maxpos={999}
+          scale="exponential"
           value={lfo.level}
           onChange={(value) => handleChange('level', value)}
         />
