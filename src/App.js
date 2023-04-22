@@ -11,7 +11,7 @@ export default function App() {
 
   const bannerContent = width < 960 && (
     <div className="browser-warning">
-      HelloSynth works best on a desktop computer in Google Chrome.
+      HelloSynth works best on a desktop computer in Google Chrome, for now.
     </div>
   );
 
